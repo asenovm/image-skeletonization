@@ -2,7 +2,7 @@ package edu.fmi.ir.skeleton;
 
 import java.io.File;
 
-public interface FileCallback {
+public interface FilePickerCallback {
 	/**
 	 * A callback that is fired when the user has finished navigating up to a
 	 * file using the file picker

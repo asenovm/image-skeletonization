@@ -12,15 +12,26 @@ public class ImageSkeleton {
 	 */
 	private static final String TITLE_APP = "Image Skeleton";
 
+	public ImageSkeleton() {
+		final FileReader reader = new FileReader();
+
+		JFrame frame = new JFrame(TITLE_APP);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		final PaneView paneView = new PaneView();
+		paneView.setFileCallback(reader);
+		reader.setCallback(paneView);
+
+		frame.add(paneView);
+		frame.pack();
+		frame.setVisible(true);
+	}
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
+			@SuppressWarnings("unused")
 			public void run() {
-				JFrame frame = new JFrame(TITLE_APP);
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-				frame.add(new PaneView());
-				frame.pack();
-				frame.setVisible(true);
+				final ImageSkeleton skeleton = new ImageSkeleton();
 			}
 		});
 	}

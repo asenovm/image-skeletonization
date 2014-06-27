@@ -3,6 +3,7 @@ package edu.fmi.ir.skeleton.view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,9 +12,11 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
-import edu.fmi.ir.skeleton.FileCallback;
+import edu.fmi.ir.skeleton.FilePickerCallback;
+import edu.fmi.ir.skeleton.ImageProcessingCallback;
 
-public class PaneView extends JPanel implements ActionListener {
+public class PaneView extends JPanel implements ActionListener,
+		ImageProcessingCallback {
 
 	/**
 	 * {@value}
@@ -36,9 +39,11 @@ public class PaneView extends JPanel implements ActionListener {
 
 	private final JFileChooser fileChooser;
 
-	private FileCallback fileCallback;
+	private final ImageView imageView;
 
-	public static class SimpleFileCallback implements FileCallback {
+	private FilePickerCallback fileCallback;
+
+	public static class SimpleFileCallback implements FilePickerCallback {
 		@Override
 		public void onFileSelected(File selected) {
 			// blank
@@ -68,6 +73,9 @@ public class PaneView extends JPanel implements ActionListener {
 		setMaximumSize(layoutDimension);
 
 		fileCallback = new SimpleFileCallback();
+
+		imageView = new ImageView();
+		add(imageView);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -85,6 +93,15 @@ public class PaneView extends JPanel implements ActionListener {
 				System.out.println("save cancelled");
 			}
 		}
+	}
+
+	public void setFileCallback(final FilePickerCallback callback) {
+		this.fileCallback = callback;
+	}
+
+	@Override
+	public void onImageProcessed(Image image) {
+		imageView.onImageProcessed(image);
 	}
 
 }
