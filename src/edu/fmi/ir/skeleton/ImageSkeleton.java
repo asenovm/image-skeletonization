@@ -2,23 +2,20 @@ package edu.fmi.ir.skeleton;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import edu.fmi.ir.skeleton.view.PaneView;
 
-/*
- * FileChooserDemo.java uses these files:
- *   images/Open16.gif
- *   images/Save16.gif
- */
 public class ImageSkeleton {
+
+	/**
+	 * {@value}
+	 */
+	private static final String TITLE_APP = "Image Skeleton";
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				UIManager.put("swing.boldMetal", Boolean.FALSE);
-
-				JFrame frame = new JFrame("FileChooserDemo");
+				JFrame frame = new JFrame(TITLE_APP);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 				frame.add(new PaneView());
