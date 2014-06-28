@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -57,9 +59,19 @@ public class PaneView extends JPanel implements ActionListener,
 
 		openButton = new JButton(BROWSE_IMAGE);
 		openButton.addActionListener(this);
+		final Dimension openButtonDimension = new Dimension(
+				PaneDimension.WIDTH_BUTTON, PaneDimension.HEIGHT_BUTTON);
+		openButton.setPreferredSize(openButtonDimension);
+		openButton.setMinimumSize(openButtonDimension);
+		openButton.setMaximumSize(openButtonDimension);
 
 		saveButton = new JButton(SAVE_IMAGE);
 		saveButton.addActionListener(this);
+		final Dimension saveButtonDimension = new Dimension(
+				PaneDimension.WIDTH_BUTTON, PaneDimension.HEIGHT_BUTTON);
+		saveButton.setPreferredSize(saveButtonDimension);
+		saveButton.setMinimumSize(saveButtonDimension);
+		saveButton.setMaximumSize(saveButtonDimension);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
@@ -67,7 +79,8 @@ public class PaneView extends JPanel implements ActionListener,
 
 		add(buttonPanel, BorderLayout.PAGE_END);
 
-		final Dimension layoutDimension = new Dimension(400, 600);
+		final Dimension layoutDimension = new Dimension(PaneDimension.WIDTH,
+				PaneDimension.HEIGHT);
 		setPreferredSize(layoutDimension);
 		setMinimumSize(layoutDimension);
 		setMaximumSize(layoutDimension);
