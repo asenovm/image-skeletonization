@@ -57,21 +57,8 @@ public class PaneView extends JPanel implements ActionListener,
 
 		fileChooser = new JFileChooser();
 
-		openButton = new JButton(BROWSE_IMAGE);
-		openButton.addActionListener(this);
-		final Dimension openButtonDimension = new Dimension(
-				PaneDimension.WIDTH_BUTTON, PaneDimension.HEIGHT_BUTTON);
-		openButton.setPreferredSize(openButtonDimension);
-		openButton.setMinimumSize(openButtonDimension);
-		openButton.setMaximumSize(openButtonDimension);
-
-		saveButton = new JButton(SAVE_IMAGE);
-		saveButton.addActionListener(this);
-		final Dimension saveButtonDimension = new Dimension(
-				PaneDimension.WIDTH_BUTTON, PaneDimension.HEIGHT_BUTTON);
-		saveButton.setPreferredSize(saveButtonDimension);
-		saveButton.setMinimumSize(saveButtonDimension);
-		saveButton.setMaximumSize(saveButtonDimension);
+		saveButton = createButton(SAVE_IMAGE);
+		openButton = createButton(BROWSE_IMAGE);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
@@ -89,6 +76,17 @@ public class PaneView extends JPanel implements ActionListener,
 
 		imageView = new ImageView();
 		add(imageView);
+	}
+
+	public JButton createButton(final String title) {
+		final JButton result = new JButton(title);
+		result.addActionListener(this);
+		final Dimension buttonDimension = new Dimension(
+				PaneDimension.WIDTH_BUTTON, PaneDimension.HEIGHT_BUTTON);
+		result.setPreferredSize(buttonDimension);
+		result.setMinimumSize(buttonDimension);
+		result.setMaximumSize(buttonDimension);
+		return result;
 	}
 
 	public void actionPerformed(ActionEvent e) {
