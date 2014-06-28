@@ -2,7 +2,7 @@ package edu.fmi.ir.skeleton;
 
 import java.io.File;
 
-public interface FilePickerCallback {
+public interface ButtonCallback {
 	/**
 	 * A callback that is fired when the user has finished navigating up to a
 	 * file using the file picker
@@ -12,4 +12,13 @@ public interface FilePickerCallback {
 	 *            picker tool
 	 */
 	void onFileSelected(final File selected);
+
+	/**
+	 * A callback fired when skeletization of the selected <tt>image</tt> is
+	 * required
+	 * 
+	 * @param image
+	 *            the image that is to be skeletized
+	 */
+	void onSkeletonRequired(final File image);
 }

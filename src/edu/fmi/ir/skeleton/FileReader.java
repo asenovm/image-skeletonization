@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-public class FileReader implements FilePickerCallback {
+public class FileReader {
 
 	/**
 	 * {@value}
@@ -19,7 +19,7 @@ public class FileReader implements FilePickerCallback {
 	public static class SimpleImageProcessingCallback implements
 			ImageProcessingCallback {
 		@Override
-		public void onImageProcessed(Image image) {
+		public void onImageProcessed(final File imageFile, final Image image) {
 			// blank
 		}
 	}
@@ -28,10 +28,9 @@ public class FileReader implements FilePickerCallback {
 		this.callback = new SimpleImageProcessingCallback();
 	}
 
-	@Override
 	public void onFileSelected(File selected) {
 		try {
-			callback.onImageProcessed(ImageIO.read(selected));
+			callback.onImageProcessed(selected, ImageIO.read(selected));
 		} catch (IOException e) {
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}

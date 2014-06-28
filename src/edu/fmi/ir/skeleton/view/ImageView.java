@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.LayoutManager;
 import java.awt.image.ImageObserver;
+import java.io.File;
 
 import javax.swing.JPanel;
 
@@ -32,8 +33,6 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 		@Override
 		public boolean imageUpdate(final Image img, final int infoflags,
 				final int x, final int y, final int width, final int height) {
-			System.out.println("width is " + width);
-			System.out.println("height is " + height);
 			return width > 0 && height > 0;
 		}
 	}
@@ -93,7 +92,7 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 	}
 
 	@Override
-	public void onImageProcessed(Image image) {
+	public void onImageProcessed(final File imageFile, final Image image) {
 		this.image = image;
 		repaint();
 	}
