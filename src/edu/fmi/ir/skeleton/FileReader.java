@@ -1,6 +1,7 @@
 package edu.fmi.ir.skeleton;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -19,7 +20,12 @@ public class FileReader {
 	public static class SimpleImageProcessingCallback implements
 			ImageProcessingCallback {
 		@Override
-		public void onImageProcessed(final File imageFile, final Image image) {
+		public void onImageRead(final File imageFile, final Image image) {
+			// blank
+		}
+
+		@Override
+		public void onImageBinarized(BufferedImage binarized) {
 			// blank
 		}
 	}
@@ -30,7 +36,7 @@ public class FileReader {
 
 	public void onFileSelected(File selected) {
 		try {
-			callback.onImageProcessed(selected, ImageIO.read(selected));
+			callback.onImageRead(selected, ImageIO.read(selected));
 		} catch (IOException e) {
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}

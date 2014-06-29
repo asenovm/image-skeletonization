@@ -5,7 +5,7 @@ public class PaneDimension {
 	/**
 	 * {@value}
 	 */
-	public static final int WIDTH = 460;
+	public static final int WIDTH = 400;
 
 	/**
 	 * {@value}
@@ -15,7 +15,12 @@ public class PaneDimension {
 	/**
 	 * {@value}
 	 */
-	public static final int WIDTH_VISIBLE = 460;
+	public static final int WIDTH_BINARIZED = 880;
+
+	/**
+	 * {@value}
+	 */
+	public static final int WIDTH_VISIBLE = 400;
 
 	/**
 	 * {@value}

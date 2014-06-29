@@ -1,8 +1,11 @@
 package edu.fmi.ir.skeleton;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 public interface ImageProcessingCallback {
-	void onImageProcessed(final File imageFile, final Image image);
+	void onImageRead(final File imageFile, final Image image);
+
+	void onImageBinarized(final BufferedImage binarized);
 }

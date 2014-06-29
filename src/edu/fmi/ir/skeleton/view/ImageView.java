@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.LayoutManager;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 
@@ -40,6 +41,12 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 	public ImageView(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
 		metricsObserver = new MetricsImageObserver();
+		
+		final Dimension dimension = new Dimension(PaneDimension.WIDTH_VISIBLE, PaneDimension.HEIGHT_VISIBLE);
+		setPreferredSize(dimension);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setSize(dimension);
 	}
 
 	public ImageView() {
@@ -60,7 +67,8 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 		super.paint(graphics);
 		if (image != null) {
 			final Dimension draw = getDrawDimensions();
-			graphics.drawImage(image, (PaneDimension.WIDTH - draw.width) / 2,
+			graphics.drawImage(image,
+					(PaneDimension.WIDTH_VISIBLE - draw.width) / 2,
 					(PaneDimension.HEIGHT_VISIBLE - draw.height) / 2,
 					draw.width, draw.height, Color.GRAY, null);
 		}
@@ -76,14 +84,16 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 		}
 
 		final double aspectRatio = (double) width / height;
-		int drawWidth = Math.min(width, PaneDimension.WIDTH - 2 * MARGIN_SIDE);
-		int drawHeight = Math.min(height,
-				(int) ((PaneDimension.WIDTH - 2 * MARGIN_SIDE) / aspectRatio));
+		int drawWidth = Math.min(width, PaneDimension.WIDTH_VISIBLE - 2
+				* MARGIN_SIDE);
+		int drawHeight = Math
+				.min(height,
+						(int) ((PaneDimension.WIDTH_VISIBLE - 2 * MARGIN_SIDE) / aspectRatio));
 		while (drawHeight > PaneDimension.HEIGHT_VISIBLE) {
 			--drawWidth;
 			drawHeight = Math
 					.min(height,
-							(int) ((PaneDimension.WIDTH - 2 * MARGIN_SIDE) / aspectRatio));
+							(int) ((PaneDimension.WIDTH_VISIBLE - 2 * MARGIN_SIDE) / aspectRatio));
 		}
 
 		result.width = drawWidth;
@@ -92,8 +102,14 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 	}
 
 	@Override
-	public void onImageProcessed(final File imageFile, final Image image) {
+	public void onImageRead(final File imageFile, final Image image) {
 		this.image = image;
+		repaint();
+	}
+
+	@Override
+	public void onImageBinarized(BufferedImage binarized) {
+		this.image = binarized;
 		repaint();
 	}
 }

@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -31,16 +32,9 @@ public class PaneView extends JPanel implements ActionListener,
 	/**
 	 * {@value}
 	 */
-	private static final String SAVE_IMAGE = "Запази";
-
-	/**
-	 * {@value}
-	 */
 	private static final String BROWSE_IMAGE = "Избери";
 
 	private final JButton openButton;
-
-	private final JButton saveButton;
 
 	private final JButton skeletonizeButton;
 
@@ -48,9 +42,13 @@ public class PaneView extends JPanel implements ActionListener,
 
 	private final ImageView imageView;
 
+	private final JPanel imagePanel;
+
 	private ButtonCallback buttonCallback;
 
 	private File imageFile;
+
+	private Image image;
 
 	public static class SimpleFileCallback implements ButtonCallback {
 		@Override
@@ -69,13 +67,11 @@ public class PaneView extends JPanel implements ActionListener,
 
 		fileChooser = new JFileChooser();
 
-		saveButton = createButton(SAVE_IMAGE);
 		openButton = createButton(BROWSE_IMAGE);
 		skeletonizeButton = createButton(SKELETONIZE_IMAGE);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
-		buttonPanel.add(saveButton);
 		buttonPanel.add(skeletonizeButton);
 
 		add(buttonPanel, BorderLayout.PAGE_END);
@@ -88,8 +84,11 @@ public class PaneView extends JPanel implements ActionListener,
 
 		buttonCallback = new SimpleFileCallback();
 
+		imagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		imageView = new ImageView();
-		add(imageView);
+		imagePanel.add(imageView);
+
+		add(imagePanel);
 	}
 
 	public JButton createButton(final String title) {
@@ -109,14 +108,6 @@ public class PaneView extends JPanel implements ActionListener,
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				buttonCallback.onFileSelected(fileChooser.getSelectedFile());
 			}
-		} else if (e.getSource() == saveButton) {
-			int returnVal = fileChooser.showSaveDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = fileChooser.getSelectedFile();
-				System.out.println("saving " + file.getName());
-			} else {
-				System.out.println("save cancelled");
-			}
 		} else if (e.getSource() == skeletonizeButton) {
 			buttonCallback.onSkeletonRequired(imageFile);
 		}
@@ -127,9 +118,34 @@ public class PaneView extends JPanel implements ActionListener,
 	}
 
 	@Override
-	public void onImageProcessed(final File imageFile, final Image image) {
+	public void onImageRead(final File imageFile, final Image image) {
 		this.imageFile = imageFile;
-		imageView.onImageProcessed(imageFile, image);
+		this.image = image;
+		imageView.onImageRead(imageFile, image);
 	}
 
+	@Override
+	public void onImageBinarized(BufferedImage binarized) {
+		final Dimension dimension = new Dimension(
+				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT);
+		setPreferredSize(dimension);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setSize(dimension);
+
+		imagePanel.removeAll();
+		imagePanel.setPreferredSize(dimension);
+		imagePanel.setMinimumSize(dimension);
+		imagePanel.setMaximumSize(dimension);
+		imagePanel.setSize(dimension);
+
+		imagePanel.removeAll();
+
+		final ImageView binarizedView = new ImageView();
+		imagePanel.add(imageView);
+		imagePanel.add(binarizedView);
+
+		binarizedView.onImageBinarized(binarized);
+		imageView.onImageRead(imageFile, image);
+	}
 }

@@ -1,5 +1,7 @@
 package edu.fmi.ir.skeleton;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.swing.JFrame;
@@ -7,7 +9,7 @@ import javax.swing.SwingUtilities;
 
 import edu.fmi.ir.skeleton.view.PaneView;
 
-public class ImageSkeleton implements ButtonCallback {
+public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
 	/**
 	 * {@value}
@@ -18,18 +20,23 @@ public class ImageSkeleton implements ButtonCallback {
 
 	private final ImageSkeletizer skeletizer;
 
+	private final PaneView layout;
+
+	private final JFrame frame;
+
 	public ImageSkeleton() {
 		reader = new FileReader();
 		skeletizer = new ImageSkeletizer();
 
-		JFrame frame = new JFrame(TITLE_APP);
+		frame = new JFrame(TITLE_APP);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		final PaneView paneView = new PaneView();
-		paneView.setButtonCallback(this);
-		reader.setCallback(paneView);
+		layout = new PaneView();
+		layout.setButtonCallback(this);
+		reader.setCallback(layout);
+		skeletizer.setCallback(this);
 
-		frame.add(paneView);
+		frame.add(layout);
 		frame.pack();
 		frame.setVisible(true);
 	}
@@ -51,5 +58,16 @@ public class ImageSkeleton implements ButtonCallback {
 	@Override
 	public void onSkeletonRequired(File image) {
 		skeletizer.skeletize(image);
+	}
+
+	@Override
+	public void onImageRead(File imageFile, Image image) {
+		layout.onImageRead(imageFile, image);
+	}
+
+	@Override
+	public void onImageBinarized(BufferedImage binarized) {
+		layout.onImageBinarized(binarized);
+		frame.pack();
 	}
 }
