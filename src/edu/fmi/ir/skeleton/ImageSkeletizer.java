@@ -2,7 +2,6 @@ package edu.fmi.ir.skeleton;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -55,29 +54,19 @@ public class ImageSkeletizer {
 
 	private static int[][] convert(BufferedImage image) {
 
-		final byte[] pixels = ((DataBufferByte) image.getRaster()
-				.getDataBuffer()).getData();
-		final int width = image.getWidth();
-		final int height = image.getHeight();
+		final int[][] result = new int[image.getHeight()][image.getWidth()];
 
-		int[][] result = new int[height][width];
-		final int pixelLength = 3;
-		for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-			if (((pixels[pixel] & 0xff) == 255)
-					&& ((pixels[pixel + 1] & 0xff) == 255)
-					&& ((pixels[pixel + 2] & 0xff) == 255)) {
-				result[row][col] = 1;
-			} else {
-				result[row][col] = 0;
-			}
-
-			col++;
-			if (col == width) {
-				col = 0;
-				row++;
+		for (int i = 0; i < image.getHeight(); ++i) {
+			for (int j = 0; j < image.getWidth(); ++j) {
+				final int rgb = image.getRGB(j, i);
+				final Color color = new Color(rgb);
+				if (Color.WHITE.equals(color)) {
+					result[i][j] = 1;
+				} else {
+					result[i][j] = 0;
+				}
 			}
 		}
-
 		return result;
 	}
 
