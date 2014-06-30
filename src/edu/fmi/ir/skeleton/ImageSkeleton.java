@@ -66,8 +66,8 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	}
 
 	@Override
-	public void onImageBinarized(BufferedImage binarized) {
-		layout.onImageBinarized(binarized);
+	public void onImageSkeletized(final BufferedImage binarized, final BufferedImage skeletized) {
+		layout.onImageSkeletized(binarized, skeletized);
 		frame.pack();
 	}
 }

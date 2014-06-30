@@ -6,15 +6,11 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.LayoutManager;
-import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.io.File;
 
 import javax.swing.JPanel;
 
-import edu.fmi.ir.skeleton.ImageProcessingCallback;
-
-public class ImageView extends JPanel implements ImageProcessingCallback {
+public class ImageView extends JPanel {
 
 	/**
 	 * {@value}
@@ -24,7 +20,7 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 	/**
 	 * {@value}
 	 */
-	private static final int MARGIN_SIDE = 20;
+	private static final int MARGIN_SIDE = 10;
 
 	private Image image;
 
@@ -41,8 +37,9 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 	public ImageView(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
 		metricsObserver = new MetricsImageObserver();
-		
-		final Dimension dimension = new Dimension(PaneDimension.WIDTH_VISIBLE, PaneDimension.HEIGHT_VISIBLE);
+
+		final Dimension dimension = new Dimension(PaneDimension.WIDTH_VISIBLE,
+				PaneDimension.HEIGHT_VISIBLE);
 		setPreferredSize(dimension);
 		setMinimumSize(dimension);
 		setMaximumSize(dimension);
@@ -101,15 +98,9 @@ public class ImageView extends JPanel implements ImageProcessingCallback {
 		return result;
 	}
 
-	@Override
-	public void onImageRead(final File imageFile, final Image image) {
+	public void setImage(final Image image) {
 		this.image = image;
 		repaint();
 	}
 
-	@Override
-	public void onImageBinarized(BufferedImage binarized) {
-		this.image = binarized;
-		repaint();
-	}
 }

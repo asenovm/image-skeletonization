@@ -121,11 +121,12 @@ public class PaneView extends JPanel implements ActionListener,
 	public void onImageRead(final File imageFile, final Image image) {
 		this.imageFile = imageFile;
 		this.image = image;
-		imageView.onImageRead(imageFile, image);
+		imageView.setImage(image);
 	}
 
 	@Override
-	public void onImageBinarized(BufferedImage binarized) {
+	public void onImageSkeletized(final BufferedImage binarized,
+			final BufferedImage skeletized) {
 		final Dimension dimension = new Dimension(
 				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT);
 		setPreferredSize(dimension);
@@ -145,7 +146,11 @@ public class PaneView extends JPanel implements ActionListener,
 		imagePanel.add(imageView);
 		imagePanel.add(binarizedView);
 
-		binarizedView.onImageBinarized(binarized);
-		imageView.onImageRead(imageFile, image);
+		final ImageView skeletizedView = new ImageView();
+		imagePanel.add(skeletizedView);
+
+		binarizedView.setImage(binarized);
+		skeletizedView.setImage(skeletized);
+		imageView.setImage(image);
 	}
 }

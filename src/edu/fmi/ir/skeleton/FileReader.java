@@ -25,7 +25,8 @@ public class FileReader {
 		}
 
 		@Override
-		public void onImageBinarized(BufferedImage binarized) {
+		public void onImageSkeletized(final BufferedImage binarized,
+				final BufferedImage skeletize) {
 			// blank
 		}
 	}

@@ -7,5 +7,5 @@ import java.io.File;
 public interface ImageProcessingCallback {
 	void onImageRead(final File imageFile, final Image image);
 
-	void onImageBinarized(final BufferedImage binarized);
+	void onImageSkeletized(final BufferedImage binarized, final BufferedImage skeletized);
 }
