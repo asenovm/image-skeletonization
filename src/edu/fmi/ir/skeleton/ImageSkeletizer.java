@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 
 public class ImageSkeletizer {
 
@@ -19,8 +20,23 @@ public class ImageSkeletizer {
 
 	private ImageProcessingCallback imageProcessingCallback;
 
+	private CallbackRunnable callbackRunnable;
+
+	private class CallbackRunnable implements Runnable {
+
+		private BufferedImage binarized;
+
+		private BufferedImage thinned;
+
+		@Override
+		public void run() {
+			imageProcessingCallback.onImageSkeletized(binarized, thinned);
+		}
+	}
+
 	public ImageSkeletizer() {
 		binarizer = new ImageBinarizer();
+		callbackRunnable = new CallbackRunnable();
 	}
 
 	public void skeletize(File imageFile) {
@@ -28,21 +44,25 @@ public class ImageSkeletizer {
 			final BufferedImage image = ImageIO.read(imageFile);
 			final BufferedImage binarized = binarizer.binarize(image);
 			final int[][] colors = convert(binarized);
-			final ImageThinner service = new ImageThinner();
-			final int[][] thinnedColors = service.getThinnedImage(colors);
+			final ImageThinner thinner = new ImageThinner();
+			final int[][] thinnedColors = thinner.getThinnedImage(colors);
 			final BufferedImage thinned = new BufferedImage(
 					thinnedColors[0].length, thinnedColors.length,
 					BufferedImage.TYPE_INT_RGB);
 			for (int i = 0; i < thinnedColors.length; ++i) {
 				for (int j = 0; j < thinnedColors[0].length; ++j) {
 					int rgb = thinnedColors[i][j];
-					if (rgb == 1) {
-						rgb = new Color(255, 255, 255).getRGB();
+					if (rgb > 0) {
+						rgb = new Color(255 - rgb, 255 - rgb, 255 - rgb)
+								.getRGB();
 					}
 					thinned.setRGB(j, i, rgb);
 				}
 			}
-			imageProcessingCallback.onImageSkeletized(binarized, thinned);
+
+			callbackRunnable.binarized = binarized;
+			callbackRunnable.thinned = thinned;
+			SwingUtilities.invokeLater(callbackRunnable);
 		} catch (IOException ex) {
 			Logger.getLogger(TAG).severe(ex.getMessage());
 		}

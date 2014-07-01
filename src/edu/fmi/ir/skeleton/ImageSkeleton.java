@@ -3,6 +3,8 @@ package edu.fmi.ir.skeleton;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -14,7 +16,7 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	/**
 	 * {@value}
 	 */
-	private static final String TITLE_APP = "Image Skeleton";
+	private static final String TITLE_APP = "Морфологична Скелетизация";
 
 	private final FileReader reader;
 
@@ -23,6 +25,20 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	private final PaneView layout;
 
 	private final JFrame frame;
+
+	private final ExecutorService executor;
+
+	private final SkeletonRunnable skeletonRunnable;
+
+	private class SkeletonRunnable implements Runnable {
+
+		private File image;
+
+		@Override
+		public void run() {
+			skeletizer.skeletize(image);
+		}
+	}
 
 	public ImageSkeleton() {
 		reader = new FileReader();
@@ -39,6 +55,9 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 		frame.add(layout);
 		frame.pack();
 		frame.setVisible(true);
+
+		executor = Executors.newSingleThreadExecutor();
+		skeletonRunnable = new SkeletonRunnable();
 	}
 
 	public static void main(String[] args) {
@@ -57,7 +76,8 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
 	@Override
 	public void onSkeletonRequired(File image) {
-		skeletizer.skeletize(image);
+		skeletonRunnable.image = image;
+		executor.execute(skeletonRunnable);
 	}
 
 	@Override
@@ -66,7 +86,8 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	}
 
 	@Override
-	public void onImageSkeletized(final BufferedImage binarized, final BufferedImage skeletized) {
+	public void onImageSkeletized(final BufferedImage binarized,
+			final BufferedImage skeletized) {
 		layout.onImageSkeletized(binarized, skeletized);
 		frame.pack();
 	}

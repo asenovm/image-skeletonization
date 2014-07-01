@@ -128,7 +128,7 @@ public class PaneView extends JPanel implements ActionListener,
 	public void onImageSkeletized(final BufferedImage binarized,
 			final BufferedImage skeletized) {
 		final Dimension dimension = new Dimension(
-				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT);
+				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
 		setPreferredSize(dimension);
 		setMinimumSize(dimension);
 		setMaximumSize(dimension);
