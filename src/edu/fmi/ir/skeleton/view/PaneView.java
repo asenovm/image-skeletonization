@@ -19,6 +19,8 @@ import edu.fmi.ir.skeleton.ImageProcessingCallback;
 public class PaneView extends JPanel implements ActionListener,
 		ImageProcessingCallback {
 
+	private static final String SAVE_IMAGE = "Запази";
+
 	/**
 	 * {@value}
 	 */
@@ -37,6 +39,8 @@ public class PaneView extends JPanel implements ActionListener,
 	private final JButton openButton;
 
 	private final JButton skeletonizeButton;
+
+	private final JButton saveButton;
 
 	private final JFileChooser fileChooser;
 
@@ -60,6 +64,11 @@ public class PaneView extends JPanel implements ActionListener,
 		public void onSkeletonRequired(File image) {
 			// blank
 		}
+
+		@Override
+		public void onSaveRequired() {
+			// blank
+		}
 	}
 
 	public PaneView() {
@@ -69,10 +78,12 @@ public class PaneView extends JPanel implements ActionListener,
 
 		openButton = createButton(BROWSE_IMAGE);
 		skeletonizeButton = createButton(SKELETONIZE_IMAGE);
+		saveButton = createButton(SAVE_IMAGE);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
 		buttonPanel.add(skeletonizeButton);
+		buttonPanel.add(saveButton);
 
 		add(buttonPanel, BorderLayout.PAGE_END);
 
@@ -110,6 +121,8 @@ public class PaneView extends JPanel implements ActionListener,
 			}
 		} else if (e.getSource() == skeletonizeButton) {
 			buttonCallback.onSkeletonRequired(imageFile);
+		} else if (e.getSource() == saveButton) {
+			buttonCallback.onSaveRequired();
 		}
 	}
 

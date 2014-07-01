@@ -91,4 +91,9 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 		layout.onImageSkeletized(binarized, skeletized);
 		frame.pack();
 	}
+
+	@Override
+	public void onSaveRequired() {
+		System.out.println("on save required in the main class");
+	}
 }

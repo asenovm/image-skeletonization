@@ -21,4 +21,6 @@ public interface ButtonCallback {
 	 *            the image that is to be skeletized
 	 */
 	void onSkeletonRequired(final File image);
+	
+	void onSaveRequired();
 }
