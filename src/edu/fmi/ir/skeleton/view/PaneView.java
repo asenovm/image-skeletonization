@@ -92,8 +92,8 @@ public class PaneView extends JPanel implements ActionListener,
 		}
 
 		@Override
-		public void onSaveRequired(final BufferedImage skeleton,
-				final BufferedImage binarized) {
+		public void onSaveRequired(final String filenamePrefix,
+				final BufferedImage skeleton, final BufferedImage binarized) {
 			// blank
 		}
 
@@ -165,7 +165,11 @@ public class PaneView extends JPanel implements ActionListener,
 		} else if (e.getSource() == skeletonizeButton) {
 			buttonCallback.onSkeletonRequired(imageFile);
 		} else if (e.getSource() == saveButton) {
-			buttonCallback.onSaveRequired(skeletizedImage, binarizedImage);
+			int returnVal = fileChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				buttonCallback.onSaveRequired(fileChooser.getSelectedFile()
+						.getAbsolutePath(), skeletizedImage, binarizedImage);
+			}
 		} else if (e.getSource() == restoreButton) {
 			buttonCallback.onRestoreRequired(imageFile, originalImageFile);
 		} else if (e.getSource() == originalButton) {

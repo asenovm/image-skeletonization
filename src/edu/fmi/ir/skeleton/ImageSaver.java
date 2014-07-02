@@ -15,14 +15,16 @@ public class ImageSaver {
 	 */
 	private static final String TAG = ImageSaver.class.getSimpleName();
 
-	public void save(final BufferedImage skeleton, final BufferedImage binarized) {
-		final long timestamp = new Date().getTime();
-		File skeletonFile = new File("skeleton" + timestamp + ".png");
-		File binarizedFile = new File("binarized" + timestamp + ".png");
+	public void save(final String filenamePrefix, final BufferedImage skeleton,
+			final BufferedImage binarized) {
+		System.out.println("prefix is  " + filenamePrefix);
+		File skeletonFile = new File(filenamePrefix + "_skeleton.png");
+		File binarizedFile = new File(filenamePrefix + "_binarized.png");
 		try {
 			ImageIO.write(skeleton, "png", skeletonFile);
 			ImageIO.write(binarized, "png", binarizedFile);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}
 	}

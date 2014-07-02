@@ -112,9 +112,9 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	}
 
 	@Override
-	public void onSaveRequired(final BufferedImage skeleton,
-			final BufferedImage binarized) {
-		saver.save(skeleton, binarized);
+	public void onSaveRequired(final String filenamePrefix,
+			final BufferedImage skeleton, final BufferedImage binarized) {
+		saver.save(filenamePrefix, skeleton, binarized);
 	}
 
 	@Override

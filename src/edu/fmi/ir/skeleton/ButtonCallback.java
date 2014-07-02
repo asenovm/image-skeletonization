@@ -29,8 +29,8 @@ public interface ButtonCallback {
 	 * @param skeleton
 	 *            the skeleton image that is to be saved
 	 */
-	void onSaveRequired(final BufferedImage skeleton,
-			final BufferedImage binarized);
+	void onSaveRequired(final String filenamePrefix,
+			final BufferedImage skeleton, final BufferedImage binarized);
 
 	/**
 	 * A callback fired when the selected skeletonized image is to be restored
