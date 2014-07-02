@@ -11,7 +11,6 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.fmi.ir.skeleton.ButtonCallback;
@@ -69,6 +68,8 @@ public class PaneView extends JPanel implements ActionListener,
 
 	private BufferedImage skeletizedImage;
 
+	private BufferedImage binarizedImage;
+
 	private Image originalImage;
 
 	private File imageFile;
@@ -91,7 +92,8 @@ public class PaneView extends JPanel implements ActionListener,
 		}
 
 		@Override
-		public void onSaveRequired(final BufferedImage skeleton) {
+		public void onSaveRequired(final BufferedImage skeleton,
+				final BufferedImage binarized) {
 			// blank
 		}
 
@@ -163,7 +165,7 @@ public class PaneView extends JPanel implements ActionListener,
 		} else if (e.getSource() == skeletonizeButton) {
 			buttonCallback.onSkeletonRequired(imageFile);
 		} else if (e.getSource() == saveButton) {
-			buttonCallback.onSaveRequired(skeletizedImage);
+			buttonCallback.onSaveRequired(skeletizedImage, binarizedImage);
 		} else if (e.getSource() == restoreButton) {
 			buttonCallback.onRestoreRequired(imageFile, originalImageFile);
 		} else if (e.getSource() == originalButton) {
@@ -216,6 +218,7 @@ public class PaneView extends JPanel implements ActionListener,
 		imageView.setImage(image);
 
 		skeletizedImage = skeletized;
+		binarizedImage = binarized;
 	}
 
 	@Override
