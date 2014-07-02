@@ -35,12 +35,14 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	private final RestoreRunnable restoreRunnable;
 
 	private class RestoreRunnable implements Runnable {
+		
+		private File originalImage;
 
 		private File image;
 
 		@Override
 		public void run() {
-			skeletizer.restore(image);
+			skeletizer.restore(image, originalImage);
 		}
 
 	}
@@ -115,14 +117,26 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	}
 
 	@Override
-	public void onRestoreRequired(File image) {
+	public void onRestoreRequired(File image, final File originalImage) {
 		restoreRunnable.image = image;
+		restoreRunnable.originalImage = originalImage;
 		executor.execute(restoreRunnable);
 	}
 
 	@Override
-	public void onImageRestored(BufferedImage restored) {
-		layout.onImageRestored(restored);
+	public void onImageRestored(BufferedImage restored, int match, int falsePositive, int falseNegative) {
+		layout.onImageRestored(restored, match, falsePositive, falseNegative);
 		frame.pack();
+	}
+
+	@Override
+	public void onOriginalFileSelected(File originalImage) {
+		reader.onOriginalFileSelected(originalImage);
+		frame.pack();
+	}
+
+	@Override
+	public void onOriginalImageRead(File originalImage, Image image) {
+		layout.onOriginalImageRead(originalImage, image);
 	}
 }

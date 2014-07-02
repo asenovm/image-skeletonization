@@ -36,5 +36,8 @@ public interface ImageProcessingCallback {
 	 * @param restored
 	 *            the restored from the skeleton image
 	 */
-	void onImageRestored(final BufferedImage restored);
+	void onImageRestored(final BufferedImage restored, final int match,
+			final int falsePositive, final int falseNegative);
+
+	void onOriginalImageRead(final File originalImage, final Image image);
 }

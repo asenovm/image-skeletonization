@@ -37,5 +37,7 @@ public interface ButtonCallback {
 	 * 
 	 * @param image
 	 */
-	void onRestoreRequired(final File image);
+	void onRestoreRequired(final File image, final File original);
+
+	void onOriginalFileSelected(final File originalImage);
 }

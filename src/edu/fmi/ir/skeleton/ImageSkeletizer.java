@@ -39,7 +39,7 @@ public class ImageSkeletizer {
 		callbackRunnable = new CallbackRunnable();
 	}
 
-	public void restore(File imageFile) {
+	public void restore(File imageFile, File originalImageFile) {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
 			final int[][] ballMap = new int[image.getHeight()][image.getWidth()];
@@ -48,7 +48,7 @@ public class ImageSkeletizer {
 					final int rgb = image.getRGB(j, i);
 					final Color color = new Color(rgb);
 					if (!Color.BLACK.equals(color)) {
-						ballMap[j][i] = 255 - color.getRed();
+						ballMap[i][j] = 255 - color.getRed();
 					}
 				}
 			}
@@ -62,7 +62,7 @@ public class ImageSkeletizer {
 			for (int i = 0; i < reconstructed.length; ++i) {
 				for (int j = 0; j < reconstructed[i].length; ++j) {
 					int rgb = 0;
-					if (reconstructed[j][i] == 1) {
+					if (reconstructed[i][j] == 1) {
 						rgb = Color.WHITE.getRGB();
 					} else {
 						rgb = Color.BLACK.getRGB();
@@ -70,7 +70,33 @@ public class ImageSkeletizer {
 					restoredImage.setRGB(j, i, rgb);
 				}
 			}
-			imageProcessingCallback.onImageRestored(restoredImage);
+
+			int match = 0;
+			int falsePositive = 0;
+			int falseNegative = 0;
+			final int blackRGB = Color.BLACK.getRGB();
+
+			final BufferedImage original = ImageIO.read(originalImageFile);
+			for (int i = 0; i < original.getHeight(); ++i) {
+				for (int j = 0; j < original.getWidth(); ++j) {
+					final int restoredRGB = restoredImage.getRGB(j, i);
+					final int originalRGB = original.getRGB(j, i);
+					if ((restoredRGB > blackRGB && originalRGB > blackRGB)
+							|| (restoredRGB == blackRGB && originalRGB == blackRGB)) {
+						++match;
+					}
+
+					if (restoredRGB > blackRGB && originalRGB == blackRGB) {
+						++falsePositive;
+					}
+
+					if (restoredRGB == blackRGB && originalRGB > blackRGB) {
+						++falseNegative;
+					}
+				}
+			}
+			imageProcessingCallback.onImageRestored(restoredImage, match,
+					falsePositive, falseNegative);
 		} catch (IOException e) {
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}

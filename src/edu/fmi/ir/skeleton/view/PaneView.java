@@ -11,6 +11,7 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.fmi.ir.skeleton.ButtonCallback;
@@ -41,6 +42,11 @@ public class PaneView extends JPanel implements ActionListener,
 	 */
 	private static final String RESTORE_IMAGE = "Възстанови";
 
+	/**
+	 * {@value}
+	 */
+	private static final String ORIGINAL_IMAGE = "Оригинал";
+
 	private final JButton openButton;
 
 	private final JButton skeletonizeButton;
@@ -49,19 +55,29 @@ public class PaneView extends JPanel implements ActionListener,
 
 	private final JButton restoreButton;
 
+	private final JButton originalButton;
+
 	private final JFileChooser fileChooser;
 
 	private final ImageView imageView;
 
 	private final JPanel imagePanel;
 
+	private final StatisticsPanel statisticsPanel;
+
 	private ButtonCallback buttonCallback;
 
 	private BufferedImage skeletizedImage;
 
+	private Image originalImage;
+
 	private File imageFile;
 
+	private File originalImageFile;
+
 	private Image image;
+
+	private final JPanel buttonPanel;
 
 	public static class SimpleFileCallback implements ButtonCallback {
 		@Override
@@ -80,7 +96,12 @@ public class PaneView extends JPanel implements ActionListener,
 		}
 
 		@Override
-		public void onRestoreRequired(final File image) {
+		public void onRestoreRequired(final File image, final File originalImage) {
+			// blank
+		}
+
+		@Override
+		public void onOriginalFileSelected(File originalImage) {
 			// blank
 		}
 	}
@@ -90,13 +111,17 @@ public class PaneView extends JPanel implements ActionListener,
 
 		fileChooser = new JFileChooser();
 
+		statisticsPanel = new StatisticsPanel();
+
 		openButton = createButton(BROWSE_IMAGE);
 		skeletonizeButton = createButton(SKELETONIZE_IMAGE);
 		saveButton = createButton(SAVE_IMAGE);
 		restoreButton = createButton(RESTORE_IMAGE);
+		originalButton = createButton(ORIGINAL_IMAGE);
 
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
+		buttonPanel.add(originalButton);
 		buttonPanel.add(skeletonizeButton);
 		buttonPanel.add(restoreButton);
 		buttonPanel.add(saveButton);
@@ -140,7 +165,13 @@ public class PaneView extends JPanel implements ActionListener,
 		} else if (e.getSource() == saveButton) {
 			buttonCallback.onSaveRequired(skeletizedImage);
 		} else if (e.getSource() == restoreButton) {
-			buttonCallback.onRestoreRequired(imageFile);
+			buttonCallback.onRestoreRequired(imageFile, originalImageFile);
+		} else if (e.getSource() == originalButton) {
+			int returnVal = fileChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				buttonCallback.onOriginalFileSelected(fileChooser
+						.getSelectedFile());
+			}
 		}
 	}
 
@@ -188,7 +219,8 @@ public class PaneView extends JPanel implements ActionListener,
 	}
 
 	@Override
-	public void onImageRestored(BufferedImage restored) {
+	public void onImageRestored(BufferedImage restored, int matching,
+			int falsePositives, int falseNegatives) {
 		final Dimension dimension = new Dimension(
 				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
 		setPreferredSize(dimension);
@@ -211,8 +243,42 @@ public class PaneView extends JPanel implements ActionListener,
 		final ImageView skeletizedView = new ImageView();
 		imagePanel.add(skeletizedView);
 
-		binarizedView.setImage(restored);
 		skeletizedView.setImage(restored);
+		binarizedView.setImage(originalImage);
 		imageView.setImage(image);
+
+		statisticsPanel.init(matching, falsePositives, falseNegatives);
+		imagePanel.add(statisticsPanel);
+	}
+
+	@Override
+	public void onOriginalImageRead(File originalImageFile, Image originalImage) {
+		final Dimension dimension = new Dimension(
+				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
+		setPreferredSize(dimension);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setSize(dimension);
+
+		imagePanel.removeAll();
+		imagePanel.setPreferredSize(dimension);
+		imagePanel.setMinimumSize(dimension);
+		imagePanel.setMaximumSize(dimension);
+		imagePanel.setSize(dimension);
+
+		imagePanel.removeAll();
+
+		final ImageView binarizedView = new ImageView();
+		imagePanel.add(imageView);
+		imagePanel.add(binarizedView);
+
+		final ImageView skeletizedView = new ImageView();
+		imagePanel.add(skeletizedView);
+
+		binarizedView.setImage(originalImage);
+		imageView.setImage(image);
+
+		this.originalImage = originalImage;
+		this.originalImageFile = originalImageFile;
 	}
 }

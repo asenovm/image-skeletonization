@@ -83,14 +83,10 @@ public class ImageView extends JPanel {
 		final double aspectRatio = (double) width / height;
 		int drawWidth = Math.min(width, PaneDimension.WIDTH_VISIBLE - 2
 				* MARGIN_SIDE);
-		int drawHeight = Math
-				.min(height,
-						(int) ((PaneDimension.WIDTH_VISIBLE - 2 * MARGIN_SIDE) / aspectRatio));
+		int drawHeight = Math.min(height, (int) (drawWidth / aspectRatio));
 		while (drawHeight > PaneDimension.HEIGHT_VISIBLE) {
 			--drawWidth;
-			drawHeight = Math
-					.min(height,
-							(int) ((PaneDimension.WIDTH_VISIBLE - 2 * MARGIN_SIDE) / aspectRatio));
+			drawHeight = Math.min(height, (int) (drawWidth / aspectRatio));
 		}
 
 		result.width = drawWidth;

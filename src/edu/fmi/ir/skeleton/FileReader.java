@@ -31,7 +31,12 @@ public class FileReader {
 		}
 
 		@Override
-		public void onImageRestored(BufferedImage restored) {
+		public void onImageRestored(BufferedImage restored, int match, int falsePositive, int falseNegative) {
+			// blank
+		}
+
+		@Override
+		public void onOriginalImageRead(File originalImage, Image image) {
 			// blank
 		}
 	}
@@ -43,6 +48,15 @@ public class FileReader {
 	public void onFileSelected(File selected) {
 		try {
 			callback.onImageRead(selected, ImageIO.read(selected));
+		} catch (IOException e) {
+			Logger.getLogger(TAG).severe(e.getMessage());
+		}
+	}
+
+	public void onOriginalFileSelected(final File originalImage) {
+		try {
+			callback.onOriginalImageRead(originalImage,
+					ImageIO.read(originalImage));
 		} catch (IOException e) {
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}
