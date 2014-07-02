@@ -5,7 +5,7 @@ public class PaneDimension {
 	/**
 	 * {@value}
 	 */
-	public static final int WIDTH = 500;
+	public static final int WIDTH = 600;
 
 	/**
 	 * {@value}

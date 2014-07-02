@@ -29,6 +29,11 @@ public class FileReader {
 				final BufferedImage skeletize) {
 			// blank
 		}
+
+		@Override
+		public void onImageRestored(BufferedImage restored) {
+			// blank
+		}
 	}
 
 	public FileReader() {

@@ -45,8 +45,39 @@ public class ImageThinner {
 		return ballMap;
 	}
 
-	public int[][] getReconstructedImage(final int[][] image) {
-		return image;
+	public int[][] getReconstructedImage(final int[][] ballMap) {
+		for (int i = 0; i < ballMap.length; ++i) {
+			for (int j = 0; j < ballMap[i].length; ++j) {
+				if (ballMap[i][j] > 1) {
+					restoreBall(ballMap, j, i);
+				}
+			}
+		}
+
+		for (int i = 0; i < ballMap.length; ++i) {
+			for (int j = 0; j < ballMap[i].length; ++j) {
+				if (ballMap[i][j] > 1) {
+					ballMap[i][j] = 1;
+				}
+			}
+		}
+
+		return ballMap;
+	}
+
+	private void restoreBall(final int[][] ballMap, final int x, final int y) {
+		final int radius = ballMap[y][x];
+		final int startX = x - radius + 1;
+		final int endX = x + radius - 1;
+		final int startY = y - radius + 1;
+		final int endY = y + radius - 1;
+		for (int i = startY; i <= endY; ++i) {
+			for (int j = startX; j <= endX; ++j) {
+				if (ballMap[i][j] == 0) {
+					ballMap[i][j] = 1;
+				}
+			}
+		}
 	}
 
 	private int getChebyshovDistance(int x1, int y1, int x2, int y2) {

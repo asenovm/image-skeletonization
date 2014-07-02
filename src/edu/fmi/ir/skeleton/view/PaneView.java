@@ -36,11 +36,18 @@ public class PaneView extends JPanel implements ActionListener,
 	 */
 	private static final String BROWSE_IMAGE = "Избери";
 
+	/**
+	 * {@value}
+	 */
+	private static final String RESTORE_IMAGE = "Възстанови";
+
 	private final JButton openButton;
 
 	private final JButton skeletonizeButton;
 
 	private final JButton saveButton;
+
+	private final JButton restoreButton;
 
 	private final JFileChooser fileChooser;
 
@@ -50,23 +57,30 @@ public class PaneView extends JPanel implements ActionListener,
 
 	private ButtonCallback buttonCallback;
 
+	private BufferedImage skeletizedImage;
+
 	private File imageFile;
 
 	private Image image;
 
 	public static class SimpleFileCallback implements ButtonCallback {
 		@Override
-		public void onFileSelected(File selected) {
+		public void onFileSelected(final File selected) {
 			// blank
 		}
 
 		@Override
-		public void onSkeletonRequired(File image) {
+		public void onSkeletonRequired(final File image) {
 			// blank
 		}
 
 		@Override
-		public void onSaveRequired() {
+		public void onSaveRequired(final BufferedImage skeleton) {
+			// blank
+		}
+
+		@Override
+		public void onRestoreRequired(final File image) {
 			// blank
 		}
 	}
@@ -79,10 +93,12 @@ public class PaneView extends JPanel implements ActionListener,
 		openButton = createButton(BROWSE_IMAGE);
 		skeletonizeButton = createButton(SKELETONIZE_IMAGE);
 		saveButton = createButton(SAVE_IMAGE);
+		restoreButton = createButton(RESTORE_IMAGE);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
 		buttonPanel.add(skeletonizeButton);
+		buttonPanel.add(restoreButton);
 		buttonPanel.add(saveButton);
 
 		add(buttonPanel, BorderLayout.PAGE_END);
@@ -122,7 +138,9 @@ public class PaneView extends JPanel implements ActionListener,
 		} else if (e.getSource() == skeletonizeButton) {
 			buttonCallback.onSkeletonRequired(imageFile);
 		} else if (e.getSource() == saveButton) {
-			buttonCallback.onSaveRequired();
+			buttonCallback.onSaveRequired(skeletizedImage);
+		} else if (e.getSource() == restoreButton) {
+			buttonCallback.onRestoreRequired(imageFile);
 		}
 	}
 
@@ -164,6 +182,37 @@ public class PaneView extends JPanel implements ActionListener,
 
 		binarizedView.setImage(binarized);
 		skeletizedView.setImage(skeletized);
+		imageView.setImage(image);
+
+		skeletizedImage = skeletized;
+	}
+
+	@Override
+	public void onImageRestored(BufferedImage restored) {
+		final Dimension dimension = new Dimension(
+				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
+		setPreferredSize(dimension);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setSize(dimension);
+
+		imagePanel.removeAll();
+		imagePanel.setPreferredSize(dimension);
+		imagePanel.setMinimumSize(dimension);
+		imagePanel.setMaximumSize(dimension);
+		imagePanel.setSize(dimension);
+
+		imagePanel.removeAll();
+
+		final ImageView binarizedView = new ImageView();
+		imagePanel.add(imageView);
+		imagePanel.add(binarizedView);
+
+		final ImageView skeletizedView = new ImageView();
+		imagePanel.add(skeletizedView);
+
+		binarizedView.setImage(restored);
+		skeletizedView.setImage(restored);
 		imageView.setImage(image);
 	}
 }

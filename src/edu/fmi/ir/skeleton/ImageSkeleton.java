@@ -18,6 +18,8 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	 */
 	private static final String TITLE_APP = "Морфологична Скелетизация";
 
+	private final ImageSaver saver;
+
 	private final FileReader reader;
 
 	private final ImageSkeletizer skeletizer;
@@ -29,6 +31,19 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	private final ExecutorService executor;
 
 	private final SkeletonRunnable skeletonRunnable;
+
+	private final RestoreRunnable restoreRunnable;
+
+	private class RestoreRunnable implements Runnable {
+
+		private File image;
+
+		@Override
+		public void run() {
+			skeletizer.restore(image);
+		}
+
+	}
 
 	private class SkeletonRunnable implements Runnable {
 
@@ -43,6 +58,7 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	public ImageSkeleton() {
 		reader = new FileReader();
 		skeletizer = new ImageSkeletizer();
+		saver = new ImageSaver();
 
 		frame = new JFrame(TITLE_APP);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,6 +74,7 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
 		executor = Executors.newSingleThreadExecutor();
 		skeletonRunnable = new SkeletonRunnable();
+		restoreRunnable = new RestoreRunnable();
 	}
 
 	public static void main(String[] args) {
@@ -93,7 +110,19 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	}
 
 	@Override
-	public void onSaveRequired() {
-		System.out.println("on save required in the main class");
+	public void onSaveRequired(final BufferedImage skeleton) {
+		saver.save(skeleton);
+	}
+
+	@Override
+	public void onRestoreRequired(File image) {
+		restoreRunnable.image = image;
+		executor.execute(restoreRunnable);
+	}
+
+	@Override
+	public void onImageRestored(BufferedImage restored) {
+		layout.onImageRestored(restored);
+		frame.pack();
 	}
 }

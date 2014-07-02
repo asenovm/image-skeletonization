@@ -39,6 +39,44 @@ public class ImageSkeletizer {
 		callbackRunnable = new CallbackRunnable();
 	}
 
+	public void restore(File imageFile) {
+		try {
+			final BufferedImage image = ImageIO.read(imageFile);
+			final int[][] ballMap = new int[image.getHeight()][image.getWidth()];
+			for (int i = 0; i < image.getHeight(); ++i) {
+				for (int j = 0; j < image.getWidth(); ++j) {
+					final int rgb = image.getRGB(j, i);
+					final Color color = new Color(rgb);
+					if (!Color.BLACK.equals(color)) {
+						ballMap[j][i] = 255 - color.getRed();
+					}
+				}
+			}
+			final ImageThinner thinner = new ImageThinner();
+			final int[][] reconstructed = thinner
+					.getReconstructedImage(ballMap);
+			final BufferedImage restoredImage = new BufferedImage(
+					image.getWidth(), image.getHeight(),
+					BufferedImage.TYPE_INT_ARGB);
+
+			for (int i = 0; i < reconstructed.length; ++i) {
+				for (int j = 0; j < reconstructed[i].length; ++j) {
+					int rgb = 0;
+					if (reconstructed[j][i] == 1) {
+						rgb = Color.WHITE.getRGB();
+					} else {
+						rgb = Color.BLACK.getRGB();
+					}
+					restoredImage.setRGB(j, i, rgb);
+				}
+			}
+			imageProcessingCallback.onImageRestored(restoredImage);
+		} catch (IOException e) {
+			Logger.getLogger(TAG).severe(e.getMessage());
+		}
+
+	}
+
 	public void skeletize(File imageFile) {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
@@ -48,13 +86,15 @@ public class ImageSkeletizer {
 			final int[][] thinnedColors = thinner.getThinnedImage(colors);
 			final BufferedImage thinned = new BufferedImage(
 					thinnedColors[0].length, thinnedColors.length,
-					BufferedImage.TYPE_INT_RGB);
+					BufferedImage.TYPE_INT_ARGB);
 			for (int i = 0; i < thinnedColors.length; ++i) {
 				for (int j = 0; j < thinnedColors[0].length; ++j) {
 					int rgb = thinnedColors[i][j];
 					if (rgb > 0) {
-						rgb = new Color(255 - rgb, 255 - rgb, 255 - rgb)
+						rgb = new Color(255 - rgb, 255 - rgb, 255 - rgb, 255)
 								.getRGB();
+					} else {
+						rgb = Color.BLACK.getRGB();
 					}
 					thinned.setRGB(j, i, rgb);
 				}

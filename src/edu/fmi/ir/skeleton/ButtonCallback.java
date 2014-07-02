@@ -1,5 +1,6 @@
 package edu.fmi.ir.skeleton;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 public interface ButtonCallback {
@@ -21,6 +22,20 @@ public interface ButtonCallback {
 	 *            the image that is to be skeletized
 	 */
 	void onSkeletonRequired(final File image);
-	
-	void onSaveRequired();
+
+	/**
+	 * A callback fired when the saving of the skeletonized image is required
+	 * 
+	 * @param skeleton
+	 *            the skeleton image that is to be saved
+	 */
+	void onSaveRequired(final BufferedImage skeleton);
+
+	/**
+	 * A callback fired when the selected skeletonized image is to be restored
+	 * to its original dimensions
+	 * 
+	 * @param image
+	 */
+	void onRestoreRequired(final File image);
 }
