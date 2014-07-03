@@ -19,12 +19,15 @@ import edu.fmi.ir.skeleton.ImageProcessingCallback;
 public class PaneView extends JPanel implements ActionListener,
 		ImageProcessingCallback {
 
-	private static final String SAVE_IMAGE = "Запази";
-
 	/**
 	 * {@value}
 	 */
 	private static final long serialVersionUID = -9067644135288203859L;
+
+	/**
+	 * {@value}
+	 */
+	private static final String SAVE_IMAGE = "Запази";
 
 	/**
 	 * {@value}
@@ -139,9 +142,16 @@ public class PaneView extends JPanel implements ActionListener,
 		buttonPanel.add(openButton);
 		buttonPanel.add(originalButton);
 		buttonPanel.add(skeletonizeButton);
+
 		buttonPanel.add(restoreButton);
 		buttonPanel.add(saveButton);
 		buttonPanel.add(vectorizeButton);
+
+		restoreButton.setVisible(false);
+		saveButton.setVisible(false);
+		vectorizeButton.setVisible(false);
+		skeletonizeButton.setVisible(false);
+		originalButton.setVisible(false);
 
 		add(buttonPanel, BorderLayout.PAGE_END);
 
@@ -211,6 +221,9 @@ public class PaneView extends JPanel implements ActionListener,
 		this.imageFile = imageFile;
 		this.image = image;
 		imageView.setImage(image);
+
+		skeletonizeButton.setVisible(true);
+		originalButton.setVisible(true);
 	}
 
 	@Override
@@ -244,6 +257,11 @@ public class PaneView extends JPanel implements ActionListener,
 
 		skeletizedImage = skeletized;
 		binarizedImage = binarized;
+
+		originalButton.setVisible(false);
+		skeletonizeButton.setVisible(false);
+		saveButton.setVisible(true);
+		vectorizeButton.setVisible(true);
 	}
 
 	@Override
@@ -308,5 +326,8 @@ public class PaneView extends JPanel implements ActionListener,
 
 		this.originalImage = originalImage;
 		this.originalImageFile = originalImageFile;
+		
+		skeletonizeButton.setVisible(false);
+		restoreButton.setVisible(true);
 	}
 }
