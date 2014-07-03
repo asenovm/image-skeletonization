@@ -2,8 +2,9 @@ package edu.fmi.ir.skeleton;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -25,6 +26,17 @@ public class ImageSaver {
 			ImageIO.write(binarized, "png", binarizedFile);
 		} catch (IOException e) {
 			e.printStackTrace();
+			Logger.getLogger(TAG).severe(e.getMessage());
+		}
+	}
+
+	public void saveVector(final String vector, final String savePath) {
+		try {
+			final PrintWriter writer = new PrintWriter(new File(savePath));
+			writer.println(vector);
+			writer.flush();
+			writer.close();
+		} catch (FileNotFoundException e) {
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}
 	}

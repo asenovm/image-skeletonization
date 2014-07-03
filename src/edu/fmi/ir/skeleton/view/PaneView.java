@@ -46,6 +46,11 @@ public class PaneView extends JPanel implements ActionListener,
 	 */
 	private static final String ORIGINAL_IMAGE = "Оригинал";
 
+	/**
+	 * {@value}
+	 */
+	private static final String VECTORIZE_IMAGE = "Векторизирай";
+
 	private final JButton openButton;
 
 	private final JButton skeletonizeButton;
@@ -55,6 +60,8 @@ public class PaneView extends JPanel implements ActionListener,
 	private final JButton restoreButton;
 
 	private final JButton originalButton;
+
+	private final JButton vectorizeButton;
 
 	private final JFileChooser fileChooser;
 
@@ -106,6 +113,12 @@ public class PaneView extends JPanel implements ActionListener,
 		public void onOriginalFileSelected(File originalImage) {
 			// blank
 		}
+
+		@Override
+		public void onVectorizationRequired(final BufferedImage skeletized,
+				final String savePath) {
+			// blank
+		}
 	}
 
 	public PaneView() {
@@ -120,6 +133,7 @@ public class PaneView extends JPanel implements ActionListener,
 		saveButton = createButton(SAVE_IMAGE);
 		restoreButton = createButton(RESTORE_IMAGE);
 		originalButton = createButton(ORIGINAL_IMAGE);
+		vectorizeButton = createButton(VECTORIZE_IMAGE);
 
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
@@ -127,6 +141,7 @@ public class PaneView extends JPanel implements ActionListener,
 		buttonPanel.add(skeletonizeButton);
 		buttonPanel.add(restoreButton);
 		buttonPanel.add(saveButton);
+		buttonPanel.add(vectorizeButton);
 
 		add(buttonPanel, BorderLayout.PAGE_END);
 
@@ -177,6 +192,12 @@ public class PaneView extends JPanel implements ActionListener,
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				buttonCallback.onOriginalFileSelected(fileChooser
 						.getSelectedFile());
+			}
+		} else if (e.getSource() == vectorizeButton) {
+			int returnVal = fileChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				buttonCallback.onVectorizationRequired(skeletizedImage,
+						fileChooser.getSelectedFile().getAbsolutePath());
 			}
 		}
 	}

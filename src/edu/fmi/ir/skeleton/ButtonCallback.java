@@ -41,4 +41,7 @@ public interface ButtonCallback {
 	void onRestoreRequired(final File image, final File original);
 
 	void onOriginalFileSelected(final File originalImage);
+
+	void onVectorizationRequired(final BufferedImage skeletized,
+			final String savePath);
 }

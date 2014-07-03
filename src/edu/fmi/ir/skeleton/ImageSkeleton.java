@@ -141,4 +141,11 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	public void onOriginalImageRead(File originalImage, Image image) {
 		layout.onOriginalImageRead(originalImage, image);
 	}
+
+	@Override
+	public void onVectorizationRequired(final BufferedImage skeleton,
+			final String savePath) {
+		final String chainCode = skeletizer.getChainCode(skeleton);
+		saver.saveVector(savePath, chainCode);
+	}
 }

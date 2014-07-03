@@ -138,6 +138,95 @@ public class ImageSkeletizer {
 		imageProcessingCallback = callback;
 	}
 
+	public String getChainCode(final BufferedImage skeleton) {
+		final int[][] colors = new int[skeleton.getHeight()][skeleton
+				.getWidth()];
+		for (int i = 0; i < colors.length; ++i) {
+			for (int j = 0; j < colors[i].length; ++j) {
+				if (Color.BLACK.getRGB() == skeleton.getRGB(j, i)) {
+					colors[i][j] = 0;
+				} else {
+					colors[i][j] = 1;
+				}
+			}
+		}
+		int startX = 0;
+		int startY = 0;
+
+		for (int i = 0; i < colors.length && startX == 0 && startY == 0; ++i) {
+			for (int j = 0; j < colors[i].length && startX == 0 && startY == 0; ++j) {
+				if (colors[i][j] == 0) {
+					startX = j;
+					startY = i;
+					break;
+				}
+			}
+		}
+
+		int currentX = startX;
+		int currentY = startY;
+
+		boolean isMoving = true;
+		final StringBuilder code = new StringBuilder();
+
+		while (colors[currentY][currentX] == 0 && isMoving) {
+			isMoving = false;
+			colors[currentY][currentX] = -1;
+			if (currentX < colors.length - 1
+					&& colors[currentY][currentX + 1] == 0) {
+				isMoving = true;
+				code.append("0");
+				++currentX;
+			} else if (currentY < colors.length - 1
+					&& currentX < colors[0].length - 1
+					&& colors[currentY + 1][currentX + 1] == 0) {
+				isMoving = true;
+				code.append("7");
+				++currentX;
+				++currentY;
+			} else if (currentY < colors.length - 1
+					&& colors[currentY + 1][currentX] == 0) {
+				isMoving = true;
+				code.append("6");
+				++currentY;
+			} else if (currentY < colors.length - 1 && currentX >= 1
+					&& colors[currentY + 1][currentX - 1] == 0) {
+				isMoving = true;
+				code.append("5");
+				++currentY;
+				--currentX;
+			} else if (currentX >= 1 && currentY >= 1
+					&& colors[currentY - 1][currentX - 1] == 0) {
+				isMoving = true;
+				code.append("3");
+				--currentX;
+				--currentY;
+			} else if (currentX >= 1 && colors[currentY][currentX - 1] == 0) {
+				isMoving = true;
+				code.append("4");
+				--currentX;
+			} else if (currentX >= 1 && currentY >= 1
+					&& colors[currentY - 1][currentX - 1] == 0) {
+				isMoving = true;
+				code.append("3");
+				--currentX;
+				--currentY;
+			} else if (currentY >= 1 && colors[currentY - 1][currentX] == 0) {
+				isMoving = true;
+				code.append("2");
+				--currentY;
+			} else if (currentY >= 1 && currentX < colors.length - 1
+					&& colors[currentY - 1][currentX + 1] == 0) {
+				isMoving = true;
+				code.append("1");
+				--currentY;
+				++currentX;
+			}
+		}
+
+		return code.toString();
+	}
+
 	private static int[][] convert(BufferedImage image) {
 
 		final int[][] result = new int[image.getHeight()][image.getWidth()];
