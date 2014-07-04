@@ -1,9 +1,11 @@
 package edu.fmi.ip.skeleton;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -141,80 +143,89 @@ public class ImageSkeletizer {
 		imageProcessingCallback = callback;
 	}
 
-	public String getChainCode(final BufferedImage skeleton) {
-		final int[][] colors = ColorsUtil.getImageColors(skeleton);
-
-		int startX = 0;
-		int startY = 0;
-
-		for (int i = 0; i < colors.length && startX == 0 && startY == 0; ++i) {
-			for (int j = 0; j < colors[i].length && startX == 0 && startY == 0; ++j) {
-				if (colors[i][j] == 0) {
-					startX = j;
-					startY = i;
-					break;
+	private Point getChainStartPosition(final int[][] image) {
+		for (int i = 0; i < image.length; ++i) {
+			for (int j = 0; j < image[i].length; ++j) {
+				if (image[i][j] > 0) {
+					return new Point(j, i);
 				}
 			}
 		}
+		return null;
+	}
 
-		int currentX = startX;
-		int currentY = startY;
-
-		boolean isMoving = true;
+	public String getChainCode(final BufferedImage skeleton) {
+		final int[][] map = ColorsUtil.getDistanceMap(skeleton);
 		final StringBuilder code = new StringBuilder();
 
-		while (colors[currentY][currentX] == 0 && isMoving) {
-			isMoving = false;
-			colors[currentY][currentX] = -1;
-			if (currentX < colors.length - 1
-					&& colors[currentY][currentX + 1] == 0) {
-				isMoving = true;
-				code.append("0");
-				++currentX;
-			} else if (currentY < colors.length - 1
-					&& currentX < colors[0].length - 1
-					&& colors[currentY + 1][currentX + 1] == 0) {
-				isMoving = true;
-				code.append("7");
-				++currentX;
-				++currentY;
-			} else if (currentY < colors.length - 1
-					&& colors[currentY + 1][currentX] == 0) {
-				isMoving = true;
-				code.append("6");
-				++currentY;
-			} else if (currentY < colors.length - 1 && currentX >= 1
-					&& colors[currentY + 1][currentX - 1] == 0) {
-				isMoving = true;
-				code.append("5");
-				++currentY;
-				--currentX;
-			} else if (currentX >= 1 && currentY >= 1
-					&& colors[currentY - 1][currentX - 1] == 0) {
-				isMoving = true;
-				code.append("3");
-				--currentX;
-				--currentY;
-			} else if (currentX >= 1 && colors[currentY][currentX - 1] == 0) {
-				isMoving = true;
-				code.append("4");
-				--currentX;
-			} else if (currentX >= 1 && currentY >= 1
-					&& colors[currentY - 1][currentX - 1] == 0) {
-				isMoving = true;
-				code.append("3");
-				--currentX;
-				--currentY;
-			} else if (currentY >= 1 && colors[currentY - 1][currentX] == 0) {
-				isMoving = true;
-				code.append("2");
-				--currentY;
-			} else if (currentY >= 1 && currentX < colors.length - 1
-					&& colors[currentY - 1][currentX + 1] == 0) {
-				isMoving = true;
-				code.append("1");
-				--currentY;
-				++currentX;
+		Point start;
+		while ((start = getChainStartPosition(map)) != null) {
+			int currentX = start.x;
+			int currentY = start.y;
+
+			boolean isMoving = true;
+			boolean appendNewLine = false;
+
+			while (isMoving) {
+				isMoving = false;
+				map[currentY][currentX] = -1;
+				if (currentX < map.length - 1
+						&& map[currentY][currentX + 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("0");
+					++currentX;
+				} else if (currentY < map.length - 1
+						&& currentX < map[0].length - 1
+						&& map[currentY + 1][currentX + 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("7");
+					++currentX;
+					++currentY;
+				} else if (currentY < map.length - 1
+						&& map[currentY + 1][currentX] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("6");
+					++currentY;
+				} else if (currentY < map.length - 1 && currentX >= 1
+						&& map[currentY + 1][currentX - 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("5");
+					++currentY;
+					--currentX;
+				} else if (currentX >= 1 && map[currentY][currentX - 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("4");
+					--currentX;
+				} else if (currentX >= 1 && currentY >= 1
+						&& map[currentY - 1][currentX - 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("3");
+					--currentX;
+					--currentY;
+				} else if (currentY >= 1 && map[currentY - 1][currentX] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("2");
+					--currentY;
+				} else if (currentY >= 1 && currentX < map.length - 1
+						&& map[currentY - 1][currentX + 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("1");
+					--currentY;
+					++currentX;
+				}
+			}
+
+			if (appendNewLine) {
+				appendNewLine = false;
+				code.append("\n");
 			}
 		}
 

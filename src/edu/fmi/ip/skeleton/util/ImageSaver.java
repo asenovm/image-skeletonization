@@ -57,13 +57,14 @@ public class ImageSaver {
 		}
 	}
 
-	public void saveVector(final String vector, final String savePath) {
+	public void saveVector(final String savePath, final String vector) {
 		try {
 			final PrintWriter writer = new PrintWriter(new File(savePath));
 			writer.println(vector);
 			writer.flush();
 			writer.close();
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			Logger.getLogger(TAG).severe(e.getMessage());
 		}
 	}

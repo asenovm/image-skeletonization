@@ -9,18 +9,19 @@ public class ColorsUtil {
 		// blank
 	}
 
-	public static int[][] getImageColors(final BufferedImage image) {
-		final int[][] colors = new int[image.getHeight()][image.getWidth()];
-		for (int i = 0; i < colors.length; ++i) {
-			for (int j = 0; j < colors[i].length; ++j) {
+	public static int[][] getDistanceMap(final BufferedImage image) {
+		final int[][] map = new int[image.getHeight()][image.getWidth()];
+		for (int i = 0; i < map.length; ++i) {
+			for (int j = 0; j < map[i].length; ++j) {
 				if (Color.BLACK.getRGB() == image.getRGB(j, i)) {
-					colors[i][j] = 0;
+					map[i][j] = 0;
 				} else {
-					colors[i][j] = 1;
+					final int red = new Color(image.getRGB(j, i)).getRed();
+					map[i][j] = 255 - red;
 				}
 			}
 		}
-		return colors;
+		return map;
 	}
 
 }

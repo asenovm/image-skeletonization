@@ -151,6 +151,7 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 	public void onVectorizationRequired(final BufferedImage skeleton,
 			final String savePath) {
 		final String chainCode = skeletizer.getChainCode(skeleton);
+		System.out.println("chain code is " + chainCode);
 		saver.saveVector(savePath, chainCode);
 	}
 }
