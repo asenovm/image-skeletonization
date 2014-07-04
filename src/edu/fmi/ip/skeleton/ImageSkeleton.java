@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton;
+package edu.fmi.ip.skeleton;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -9,7 +9,11 @@ import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import edu.fmi.ir.skeleton.view.PaneView;
+import edu.fmi.ip.skeleton.callback.ButtonCallback;
+import edu.fmi.ip.skeleton.callback.ImageProcessingCallback;
+import edu.fmi.ip.skeleton.util.FileReader;
+import edu.fmi.ip.skeleton.util.ImageSaver;
+import edu.fmi.ip.skeleton.view.PaneView;
 
 public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
@@ -113,8 +117,9 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
 	@Override
 	public void onSaveRequired(final String filenamePrefix,
-			final BufferedImage skeleton, final BufferedImage binarized) {
-		saver.save(filenamePrefix, skeleton, binarized);
+			final BufferedImage skeleton, final BufferedImage binarized,
+			final BufferedImage restored) {
+		saver.save(filenamePrefix, skeleton, binarized, restored);
 	}
 
 	@Override

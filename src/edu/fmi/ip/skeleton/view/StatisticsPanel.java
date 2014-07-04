@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton.view;
+package edu.fmi.ip.skeleton.view;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;

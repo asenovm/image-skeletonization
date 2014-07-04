@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton;
+package edu.fmi.ip.skeleton;
 
 import java.util.Arrays;
 

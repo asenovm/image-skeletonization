@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton;
+package edu.fmi.ip.skeleton;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+
+import edu.fmi.ip.skeleton.callback.ImageProcessingCallback;
+import edu.fmi.ip.skeleton.util.ColorsUtil;
 
 public class ImageSkeletizer {
 
@@ -139,17 +142,8 @@ public class ImageSkeletizer {
 	}
 
 	public String getChainCode(final BufferedImage skeleton) {
-		final int[][] colors = new int[skeleton.getHeight()][skeleton
-				.getWidth()];
-		for (int i = 0; i < colors.length; ++i) {
-			for (int j = 0; j < colors[i].length; ++j) {
-				if (Color.BLACK.getRGB() == skeleton.getRGB(j, i)) {
-					colors[i][j] = 0;
-				} else {
-					colors[i][j] = 1;
-				}
-			}
-		}
+		final int[][] colors = ColorsUtil.getImageColors(skeleton);
+
 		int startX = 0;
 		int startY = 0;
 

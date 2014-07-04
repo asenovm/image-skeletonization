@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton.view;
+package edu.fmi.ip.skeleton.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,8 +38,9 @@ public class ImageView extends JPanel {
 		super(layout, isDoubleBuffered);
 		metricsObserver = new MetricsImageObserver();
 
-		final Dimension dimension = new Dimension(PaneDimension.WIDTH_VISIBLE,
-				PaneDimension.HEIGHT_VISIBLE);
+		final Dimension dimension = new Dimension(
+				PaneDimension.WIDTH_CONTAINER_IMAGE,
+				PaneDimension.HEIGHT_CONTAINER_IMAGE);
 		setPreferredSize(dimension);
 		setMinimumSize(dimension);
 		setMaximumSize(dimension);
@@ -65,8 +66,8 @@ public class ImageView extends JPanel {
 		if (image != null) {
 			final Dimension draw = getDrawDimensions();
 			graphics.drawImage(image,
-					(PaneDimension.WIDTH_VISIBLE - draw.width) / 2,
-					(PaneDimension.HEIGHT_VISIBLE - draw.height) / 2,
+					(PaneDimension.WIDTH_CONTAINER_IMAGE - draw.width) / 2,
+					(PaneDimension.HEIGHT_CONTAINER_IMAGE - draw.height) / 2,
 					draw.width, draw.height, Color.GRAY, null);
 		}
 	}
@@ -81,10 +82,10 @@ public class ImageView extends JPanel {
 		}
 
 		final double aspectRatio = (double) width / height;
-		int drawWidth = Math.min(width, PaneDimension.WIDTH_VISIBLE - 2
+		int drawWidth = Math.min(width, PaneDimension.WIDTH_CONTAINER_IMAGE - 2
 				* MARGIN_SIDE);
 		int drawHeight = Math.min(height, (int) (drawWidth / aspectRatio));
-		while (drawHeight > PaneDimension.HEIGHT_VISIBLE) {
+		while (drawHeight > PaneDimension.HEIGHT_CONTAINER_IMAGE) {
 			--drawWidth;
 			drawHeight = Math.min(height, (int) (drawWidth / aspectRatio));
 		}

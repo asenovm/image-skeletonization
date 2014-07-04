@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton.view;
+package edu.fmi.ip.skeleton.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,8 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
-import edu.fmi.ir.skeleton.ButtonCallback;
-import edu.fmi.ir.skeleton.ImageProcessingCallback;
+import edu.fmi.ip.skeleton.callback.ButtonCallback;
+import edu.fmi.ip.skeleton.callback.ImageProcessingCallback;
 
 public class PaneView extends JPanel implements ActionListener,
 		ImageProcessingCallback {
@@ -80,6 +80,8 @@ public class PaneView extends JPanel implements ActionListener,
 
 	private BufferedImage binarizedImage;
 
+	private BufferedImage restoredImage;
+
 	private Image originalImage;
 
 	private File imageFile;
@@ -103,7 +105,8 @@ public class PaneView extends JPanel implements ActionListener,
 
 		@Override
 		public void onSaveRequired(final String filenamePrefix,
-				final BufferedImage skeleton, final BufferedImage binarized) {
+				final BufferedImage skeleton, final BufferedImage binarized,
+				final BufferedImage restored) {
 			// blank
 		}
 
@@ -142,16 +145,12 @@ public class PaneView extends JPanel implements ActionListener,
 		buttonPanel.add(openButton);
 		buttonPanel.add(originalButton);
 		buttonPanel.add(skeletonizeButton);
-
 		buttonPanel.add(restoreButton);
 		buttonPanel.add(saveButton);
 		buttonPanel.add(vectorizeButton);
 
-		restoreButton.setVisible(false);
-		saveButton.setVisible(false);
-		vectorizeButton.setVisible(false);
-		skeletonizeButton.setVisible(false);
-		originalButton.setVisible(false);
+		hideAllButtons();
+		openButton.setVisible(true);
 
 		add(buttonPanel, BorderLayout.PAGE_END);
 
@@ -193,7 +192,8 @@ public class PaneView extends JPanel implements ActionListener,
 			int returnVal = fileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				buttonCallback.onSaveRequired(fileChooser.getSelectedFile()
-						.getAbsolutePath(), skeletizedImage, binarizedImage);
+						.getAbsolutePath(), skeletizedImage, binarizedImage,
+						restoredImage);
 			}
 		} else if (e.getSource() == restoreButton) {
 			buttonCallback.onRestoreRequired(imageFile, originalImageFile);
@@ -218,10 +218,22 @@ public class PaneView extends JPanel implements ActionListener,
 
 	@Override
 	public void onImageRead(final File imageFile, final Image image) {
+		final Dimension layoutDimension = new Dimension(PaneDimension.WIDTH,
+				PaneDimension.HEIGHT);
+		imagePanel.setMinimumSize(layoutDimension);
+		imagePanel.setMaximumSize(layoutDimension);
+		imagePanel.setPreferredSize(layoutDimension);
+		imagePanel.setSize(layoutDimension);
+
+		imagePanel.removeAll();
+		imagePanel.add(imageView);
+
 		this.imageFile = imageFile;
 		this.image = image;
 		imageView.setImage(image);
 
+		hideAllButtons();
+		openButton.setVisible(true);
 		skeletonizeButton.setVisible(true);
 		originalButton.setVisible(true);
 	}
@@ -229,19 +241,6 @@ public class PaneView extends JPanel implements ActionListener,
 	@Override
 	public void onImageSkeletized(final BufferedImage binarized,
 			final BufferedImage skeletized) {
-		final Dimension dimension = new Dimension(
-				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
-		setPreferredSize(dimension);
-		setMinimumSize(dimension);
-		setMaximumSize(dimension);
-		setSize(dimension);
-
-		imagePanel.removeAll();
-		imagePanel.setPreferredSize(dimension);
-		imagePanel.setMinimumSize(dimension);
-		imagePanel.setMaximumSize(dimension);
-		imagePanel.setSize(dimension);
-
 		imagePanel.removeAll();
 
 		final ImageView binarizedView = new ImageView();
@@ -258,8 +257,8 @@ public class PaneView extends JPanel implements ActionListener,
 		skeletizedImage = skeletized;
 		binarizedImage = binarized;
 
-		originalButton.setVisible(false);
-		skeletonizeButton.setVisible(false);
+		hideAllButtons();
+		openButton.setVisible(true);
 		saveButton.setVisible(true);
 		vectorizeButton.setVisible(true);
 	}
@@ -267,21 +266,7 @@ public class PaneView extends JPanel implements ActionListener,
 	@Override
 	public void onImageRestored(BufferedImage restored, int matching,
 			int falsePositives, int falseNegatives) {
-		final Dimension dimension = new Dimension(
-				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
-		setPreferredSize(dimension);
-		setMinimumSize(dimension);
-		setMaximumSize(dimension);
-		setSize(dimension);
-
 		imagePanel.removeAll();
-		imagePanel.setPreferredSize(dimension);
-		imagePanel.setMinimumSize(dimension);
-		imagePanel.setMaximumSize(dimension);
-		imagePanel.setSize(dimension);
-
-		imagePanel.removeAll();
-
 		final ImageView binarizedView = new ImageView();
 		imagePanel.add(imageView);
 		imagePanel.add(binarizedView);
@@ -295,23 +280,16 @@ public class PaneView extends JPanel implements ActionListener,
 
 		statisticsPanel.init(matching, falsePositives, falseNegatives);
 		imagePanel.add(statisticsPanel);
+
+		hideAllButtons();
+		openButton.setVisible(true);
+		saveButton.setVisible(true);
+
+		restoredImage = restored;
 	}
 
 	@Override
 	public void onOriginalImageRead(File originalImageFile, Image originalImage) {
-		final Dimension dimension = new Dimension(
-				PaneDimension.WIDTH_BINARIZED, PaneDimension.HEIGHT_BINARIZED);
-		setPreferredSize(dimension);
-		setMinimumSize(dimension);
-		setMaximumSize(dimension);
-		setSize(dimension);
-
-		imagePanel.removeAll();
-		imagePanel.setPreferredSize(dimension);
-		imagePanel.setMinimumSize(dimension);
-		imagePanel.setMaximumSize(dimension);
-		imagePanel.setSize(dimension);
-
 		imagePanel.removeAll();
 
 		final ImageView binarizedView = new ImageView();
@@ -326,8 +304,18 @@ public class PaneView extends JPanel implements ActionListener,
 
 		this.originalImage = originalImage;
 		this.originalImageFile = originalImageFile;
-		
-		skeletonizeButton.setVisible(false);
+
+		hideAllButtons();
+		openButton.setVisible(true);
+		originalButton.setVisible(true);
 		restoreButton.setVisible(true);
+	}
+
+	private void hideAllButtons() {
+		skeletonizeButton.setVisible(false);
+		restoreButton.setVisible(false);
+		originalButton.setVisible(false);
+		vectorizeButton.setVisible(false);
+		saveButton.setVisible(false);
 	}
 }

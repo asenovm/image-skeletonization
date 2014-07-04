@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton;
+package edu.fmi.ip.skeleton.util;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+
+import edu.fmi.ip.skeleton.callback.ImageProcessingCallback;
 
 public class FileReader {
 

@@ -1,4 +1,4 @@
-package edu.fmi.ir.skeleton;
+package edu.fmi.ip.skeleton;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -26,15 +26,16 @@ public class ImageBinarizer {
 	private static final int INTENSITY_MAX = 256;
 
 	public BufferedImage binarize(final BufferedImage image) {
-		final BufferedImage grayImage = grayImage(image);
+		final BufferedImage grayImage = convertToGrayScale(image);
 		return binarizeInternal(grayImage);
 	}
 
-	private int[] imageHistogram(BufferedImage image) {
+	private int[] getHistogram(BufferedImage image) {
 		int[] histogram = new int[INTENSITY_MAX];
 
-		for (int i = 0; i < histogram.length; i++)
+		for (int i = 0; i < histogram.length; i++) {
 			histogram[i] = 0;
+		}
 
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
@@ -47,39 +48,48 @@ public class ImageBinarizer {
 
 	}
 
-	private int otsuTreshold(BufferedImage original) {
+	private int getBinarizationTreshold(BufferedImage original) {
 
-		int[] histogram = imageHistogram(original);
-		int total = original.getHeight() * original.getWidth();
+		int[] histogram = getHistogram(original);
+		double total = original.getHeight() * original.getWidth();
 
-		float sum = 0;
-		for (int i = 0; i < INTENSITY_MAX; i++)
+		double sum = 0;
+		for (int i = 0; i < INTENSITY_MAX; i++) {
 			sum += i * histogram[i];
+		}
 
-		float sumB = 0;
-		int wB = 0;
-		int wF = 0;
+		double sumBackground = 0;
+		double probabilityBackground = 0;
+		double probabilityForeground = 0;
 
-		float varMax = 0;
+		double bestVariance = 0;
 		int threshold = 0;
 
 		for (int i = 0; i < INTENSITY_MAX; i++) {
-			wB += histogram[i];
-			if (wB == 0)
+			probabilityBackground += histogram[i] / total;
+
+			if (probabilityBackground == 0) {
 				continue;
-			wF = total - wB;
+			}
 
-			if (wF == 0)
+			probabilityForeground = 1 - probabilityBackground;
+
+			if (probabilityForeground == 0) {
 				break;
+			}
 
-			sumB += (float) (i * histogram[i]);
-			float mB = sumB / wB;
-			float mF = (sum - sumB) / wF;
+			sumBackground += i * histogram[i];
 
-			float varBetween = (float) wB * (float) wF * (mB - mF) * (mB - mF);
+			double expectationBackground = sumBackground / probabilityBackground;
+			double expectationForeground = (sum - sumBackground)
+					/ probabilityForeground;
 
-			if (varBetween > varMax) {
-				varMax = varBetween;
+			double variance = probabilityBackground * probabilityForeground
+					* (expectationBackground - expectationForeground)
+					* (expectationBackground - expectationForeground);
+
+			if (variance > bestVariance) {
+				bestVariance = variance;
 				threshold = i;
 			}
 		}
@@ -91,7 +101,7 @@ public class ImageBinarizer {
 	private BufferedImage binarizeInternal(BufferedImage image) {
 		int red;
 		int newPixel;
-		int threshold = otsuTreshold(image);
+		int threshold = getBinarizationTreshold(image);
 
 		BufferedImage binarized = new BufferedImage(image.getWidth(),
 				image.getHeight(), image.getType());
@@ -99,7 +109,6 @@ public class ImageBinarizer {
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
 
-				// Get pixels
 				red = new Color(image.getRGB(i, j)).getRed();
 				if (red > threshold) {
 					newPixel = 255;
@@ -116,7 +125,7 @@ public class ImageBinarizer {
 
 	}
 
-	private BufferedImage grayImage(final BufferedImage image) {
+	private BufferedImage convertToGrayScale(final BufferedImage image) {
 		int red, green, blue;
 		int newPixel;
 		BufferedImage lum = new BufferedImage(image.getWidth(),
