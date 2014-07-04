@@ -1,8 +1,7 @@
 package edu.fmi.ip.skeleton;
 
-import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_BACKGROUND;
 import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_FOREGROUND;
-import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_MAX;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -15,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import edu.fmi.ip.skeleton.callback.ImageProcessingCallback;
+import edu.fmi.ip.skeleton.util.ColorUtil;
 
 public class ImageSkeletizer {
 
@@ -46,17 +46,27 @@ public class ImageSkeletizer {
 		callbackRunnable = new CallbackRunnable();
 	}
 
+	/**
+	 * Restores the compressed image in <tt>imageFile</tt> and callbacks the
+	 * differences between it and the original file
+	 * 
+	 * @param imageFile
+	 *            the compressed image file
+	 * 
+	 * @param originalImageFile
+	 *            the original image file for comparison
+	 */
 	public void restore(File imageFile, File originalImageFile) {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
-			final int[][] ballMap = DistanceMapGenerator.getDistanceMap(image);
+			final int[][] ballMap = DistanceMapRetriever.getDistanceMap(image);
 
 			final ImageThinner thinner = new ImageThinner();
 			final int[][] reconstructed = thinner
 					.getReconstructedImage(ballMap);
+
 			final BufferedImage restoredImage = new BufferedImage(
-					image.getWidth(), image.getHeight(),
-					BufferedImage.TYPE_INT_ARGB);
+					image.getWidth(), image.getHeight(), TYPE_INT_ARGB);
 
 			for (int i = 0; i < reconstructed.length; ++i) {
 				for (int j = 0; j < reconstructed[i].length; ++j) {
@@ -106,19 +116,19 @@ public class ImageSkeletizer {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
 			final BufferedImage binarized = binarizer.binarize(image);
-			final int[][] colors = convert(binarized);
+			final int[][] colors = ColorUtil.convertToBinaryColors(binarized);
+
 			final ImageThinner thinner = new ImageThinner();
-			final int[][] thinnedColors = thinner.getThinnedImage(colors);
-			final BufferedImage thinned = new BufferedImage(
-					thinnedColors[0].length, thinnedColors.length,
-					BufferedImage.TYPE_INT_ARGB);
-			for (int i = 0; i < thinnedColors.length; ++i) {
-				for (int j = 0; j < thinnedColors[0].length; ++j) {
-					int rgb = thinnedColors[i][j];
+			final int[][] ballMap = thinner.getThinnedImage(colors);
+
+			final BufferedImage thinned = new BufferedImage(ballMap[0].length,
+					ballMap.length, TYPE_INT_ARGB);
+
+			for (int i = 0; i < ballMap.length; ++i) {
+				for (int j = 0; j < ballMap[0].length; ++j) {
+					int rgb = ballMap[i][j];
 					if (rgb > 0) {
-						rgb = new Color(INTENSITY_MAX - rgb, INTENSITY_MAX
-								- rgb, INTENSITY_MAX - rgb, INTENSITY_MAX)
-								.getRGB();
+						rgb = ColorUtil.distanceToColor(rgb);
 					} else {
 						rgb = Color.BLACK.getRGB();
 					}
@@ -150,7 +160,7 @@ public class ImageSkeletizer {
 	}
 
 	public String getChainCode(final BufferedImage skeleton) {
-		final int[][] map = DistanceMapGenerator.getDistanceMap(skeleton);
+		final int[][] map = DistanceMapRetriever.getDistanceMap(skeleton);
 		final StringBuilder code = new StringBuilder();
 
 		Point start;
@@ -225,25 +235,6 @@ public class ImageSkeletizer {
 		}
 
 		return code.toString();
-	}
-
-	private static int[][] convert(BufferedImage image) {
-
-		final int[][] result = new int[image.getHeight()][image.getWidth()];
-
-		for (int i = 0; i < image.getHeight(); ++i) {
-			for (int j = 0; j < image.getWidth(); ++j) {
-				final int rgb = image.getRGB(j, i);
-				final Color color = new Color(rgb);
-				if (Color.WHITE.equals(color)) {
-					result[i][j] = INTENSITY_FOREGROUND;
-				} else {
-					result[i][j] = INTENSITY_BACKGROUND;
-				}
-			}
-		}
-
-		return result;
 	}
 
 }

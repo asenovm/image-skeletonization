@@ -12,6 +12,14 @@ import edu.fmi.ip.skeleton.util.ColorUtil;
 
 public class ImageBinarizer {
 
+	/**
+	 * Binarizes the given image, using Otsu's method for finding binarization
+	 * threshold
+	 * 
+	 * @param image
+	 *            the image that is to be binarized
+	 * @return the binarized image
+	 */
 	public BufferedImage binarize(final BufferedImage image) {
 		final BufferedImage grayImage = convertToGrayScale(image);
 		return binarizeInternal(grayImage);

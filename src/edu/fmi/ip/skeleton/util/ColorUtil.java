@@ -43,4 +43,28 @@ public class ColorUtil {
 		return new Color(red, green, blue).getRGB();
 	}
 
+	public static int distanceToColor(final int distance) {
+		return new Color(INTENSITY_MAX - distance, INTENSITY_MAX - distance,
+				INTENSITY_MAX - distance, INTENSITY_MAX).getRGB();
+	}
+
+	public static int[][] convertToBinaryColors(BufferedImage image) {
+
+		final int[][] result = new int[image.getHeight()][image.getWidth()];
+
+		for (int i = 0; i < image.getHeight(); ++i) {
+			for (int j = 0; j < image.getWidth(); ++j) {
+				final int rgb = image.getRGB(j, i);
+				final Color color = new Color(rgb);
+				if (Color.WHITE.equals(color)) {
+					result[i][j] = INTENSITY_FOREGROUND;
+				} else {
+					result[i][j] = INTENSITY_BACKGROUND;
+				}
+			}
+		}
+
+		return result;
+	}
+
 }

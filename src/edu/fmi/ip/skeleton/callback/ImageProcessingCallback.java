@@ -39,5 +39,14 @@ public interface ImageProcessingCallback {
 	void onImageRestored(final BufferedImage restored, final int match,
 			final int falsePositive, final int falseNegative);
 
+	/**
+	 * A callback fired when the original image that is to be compared with the
+	 * version, retrieved from the skeleton has been read
+	 * 
+	 * @param originalImage
+	 *            the file representation of the image
+	 * @param image
+	 *            the {@link Image} representation of the image
+	 */
 	void onOriginalImageRead(final File originalImage, final Image image);
 }
