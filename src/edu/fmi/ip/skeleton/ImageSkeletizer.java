@@ -180,6 +180,43 @@ public class ImageSkeletizer {
 					appendNewLine = true;
 					code.append("0");
 					++currentX;
+				} else if (currentY >= 1 && currentX < map.length - 1
+						&& map[currentY - 1][currentX + 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("1");
+					--currentY;
+					++currentX;
+				} else if (currentY >= 1 && map[currentY - 1][currentX] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("2");
+					--currentY;
+				} else if (currentX >= 1 && currentY >= 1
+						&& map[currentY - 1][currentX - 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("3");
+					--currentX;
+					--currentY;
+				} else if (currentX >= 1 && map[currentY][currentX - 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("4");
+					--currentX;
+				} else if (currentY < map.length - 1 && currentX >= 1
+						&& map[currentY + 1][currentX - 1] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("5");
+					++currentY;
+					--currentX;
+				} else if (currentY < map.length - 1
+						&& map[currentY + 1][currentX] > 0) {
+					isMoving = true;
+					appendNewLine = true;
+					code.append("6");
+					++currentY;
 				} else if (currentY < map.length - 1
 						&& currentX < map[0].length - 1
 						&& map[currentY + 1][currentX + 1] > 0) {
@@ -188,43 +225,6 @@ public class ImageSkeletizer {
 					code.append("7");
 					++currentX;
 					++currentY;
-				} else if (currentY < map.length - 1
-						&& map[currentY + 1][currentX] > 0) {
-					isMoving = true;
-					appendNewLine = true;
-					code.append("6");
-					++currentY;
-				} else if (currentY < map.length - 1 && currentX >= 1
-						&& map[currentY + 1][currentX - 1] > 0) {
-					isMoving = true;
-					appendNewLine = true;
-					code.append("5");
-					++currentY;
-					--currentX;
-				} else if (currentX >= 1 && map[currentY][currentX - 1] > 0) {
-					isMoving = true;
-					appendNewLine = true;
-					code.append("4");
-					--currentX;
-				} else if (currentX >= 1 && currentY >= 1
-						&& map[currentY - 1][currentX - 1] > 0) {
-					isMoving = true;
-					appendNewLine = true;
-					code.append("3");
-					--currentX;
-					--currentY;
-				} else if (currentY >= 1 && map[currentY - 1][currentX] > 0) {
-					isMoving = true;
-					appendNewLine = true;
-					code.append("2");
-					--currentY;
-				} else if (currentY >= 1 && currentX < map.length - 1
-						&& map[currentY - 1][currentX + 1] > 0) {
-					isMoving = true;
-					appendNewLine = true;
-					code.append("1");
-					--currentY;
-					++currentX;
 				}
 			}
 
