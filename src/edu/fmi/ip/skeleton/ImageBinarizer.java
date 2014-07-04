@@ -1,29 +1,16 @@
 package edu.fmi.ip.skeleton;
 
+import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_MAX;
+import static edu.fmi.ip.skeleton.util.ColorUtil.LUMINANCE_BLUE;
+import static edu.fmi.ip.skeleton.util.ColorUtil.LUMINANCE_GREEN;
+import static edu.fmi.ip.skeleton.util.ColorUtil.LUMINANCE_RED;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import edu.fmi.ip.skeleton.util.ColorUtil;
+
 public class ImageBinarizer {
-
-	/**
-	 * {@value}
-	 */
-	private static final double COEF_LUMINANCE_BLUE = 0.07;
-
-	/**
-	 * {@value}
-	 */
-	private static final double COEF_LUMINANCE_GREEN = 0.71;
-
-	/**
-	 * {@value}
-	 */
-	private static final double COEF_LUMINANCE_RED = 0.21;
-
-	/**
-	 * {@value}
-	 */
-	private static final int INTENSITY_MAX = 256;
 
 	public BufferedImage binarize(final BufferedImage image) {
 		final BufferedImage grayImage = convertToGrayScale(image);
@@ -31,7 +18,7 @@ public class ImageBinarizer {
 	}
 
 	private int[] getHistogram(BufferedImage image) {
-		int[] histogram = new int[INTENSITY_MAX];
+		int[] histogram = new int[INTENSITY_MAX + 1];
 
 		for (int i = 0; i < histogram.length; i++) {
 			histogram[i] = 0;
@@ -54,7 +41,7 @@ public class ImageBinarizer {
 		double total = original.getHeight() * original.getWidth();
 
 		double sum = 0;
-		for (int i = 0; i < INTENSITY_MAX; i++) {
+		for (int i = 0; i < histogram.length; i++) {
 			sum += i * histogram[i];
 		}
 
@@ -65,7 +52,7 @@ public class ImageBinarizer {
 		double bestVariance = 0;
 		int threshold = 0;
 
-		for (int i = 0; i < INTENSITY_MAX; i++) {
+		for (int i = 0; i < histogram.length; i++) {
 			probabilityBackground += histogram[i] / total;
 
 			if (probabilityBackground == 0) {
@@ -80,7 +67,8 @@ public class ImageBinarizer {
 
 			sumBackground += i * histogram[i];
 
-			double expectationBackground = sumBackground / probabilityBackground;
+			double expectationBackground = sumBackground
+					/ probabilityBackground;
 			double expectationForeground = (sum - sumBackground)
 					/ probabilityForeground;
 
@@ -111,11 +99,11 @@ public class ImageBinarizer {
 
 				red = new Color(image.getRGB(i, j)).getRed();
 				if (red > threshold) {
-					newPixel = 255;
+					newPixel = INTENSITY_MAX;
 				} else {
 					newPixel = 0;
 				}
-				newPixel = toRGB(newPixel, newPixel, newPixel);
+				newPixel = ColorUtil.toRGB(newPixel, newPixel, newPixel);
 				binarized.setRGB(i, j, newPixel);
 
 			}
@@ -138,16 +126,13 @@ public class ImageBinarizer {
 				green = pixelColor.getGreen();
 				blue = pixelColor.getBlue();
 
-				red = (int) (COEF_LUMINANCE_RED * red + COEF_LUMINANCE_GREEN
-						* green + COEF_LUMINANCE_BLUE * blue);
-				newPixel = toRGB(red, red, red);
+				red = (int) (LUMINANCE_RED * red + LUMINANCE_GREEN * green + LUMINANCE_BLUE
+						* blue);
+				newPixel = ColorUtil.toRGB(red, red, red);
 				lum.setRGB(i, j, newPixel);
 			}
 		}
 		return lum;
 	}
 
-	private int toRGB(int red, int green, int blue) {
-		return new Color(red, green, blue).getRGB();
-	}
 }

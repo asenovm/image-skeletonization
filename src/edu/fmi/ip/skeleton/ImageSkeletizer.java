@@ -1,18 +1,20 @@
 package edu.fmi.ip.skeleton;
 
+import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_BACKGROUND;
+import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_FOREGROUND;
+import static edu.fmi.ip.skeleton.util.ColorUtil.INTENSITY_MAX;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import edu.fmi.ip.skeleton.callback.ImageProcessingCallback;
-import edu.fmi.ip.skeleton.util.ColorsUtil;
 
 public class ImageSkeletizer {
 
@@ -47,16 +49,8 @@ public class ImageSkeletizer {
 	public void restore(File imageFile, File originalImageFile) {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
-			final int[][] ballMap = new int[image.getHeight()][image.getWidth()];
-			for (int i = 0; i < image.getHeight(); ++i) {
-				for (int j = 0; j < image.getWidth(); ++j) {
-					final int rgb = image.getRGB(j, i);
-					final Color color = new Color(rgb);
-					if (!Color.BLACK.equals(color)) {
-						ballMap[i][j] = 255 - color.getRed();
-					}
-				}
-			}
+			final int[][] ballMap = DistanceMapGenerator.getDistanceMap(image);
+
 			final ImageThinner thinner = new ImageThinner();
 			final int[][] reconstructed = thinner
 					.getReconstructedImage(ballMap);
@@ -67,7 +61,7 @@ public class ImageSkeletizer {
 			for (int i = 0; i < reconstructed.length; ++i) {
 				for (int j = 0; j < reconstructed[i].length; ++j) {
 					int rgb = 0;
-					if (reconstructed[i][j] == 1) {
+					if (reconstructed[i][j] == INTENSITY_FOREGROUND) {
 						rgb = Color.WHITE.getRGB();
 					} else {
 						rgb = Color.BLACK.getRGB();
@@ -122,7 +116,8 @@ public class ImageSkeletizer {
 				for (int j = 0; j < thinnedColors[0].length; ++j) {
 					int rgb = thinnedColors[i][j];
 					if (rgb > 0) {
-						rgb = new Color(255 - rgb, 255 - rgb, 255 - rgb, 255)
+						rgb = new Color(INTENSITY_MAX - rgb, INTENSITY_MAX
+								- rgb, INTENSITY_MAX - rgb, INTENSITY_MAX)
 								.getRGB();
 					} else {
 						rgb = Color.BLACK.getRGB();
@@ -155,7 +150,7 @@ public class ImageSkeletizer {
 	}
 
 	public String getChainCode(final BufferedImage skeleton) {
-		final int[][] map = ColorsUtil.getDistanceMap(skeleton);
+		final int[][] map = DistanceMapGenerator.getDistanceMap(skeleton);
 		final StringBuilder code = new StringBuilder();
 
 		Point start;
@@ -241,12 +236,13 @@ public class ImageSkeletizer {
 				final int rgb = image.getRGB(j, i);
 				final Color color = new Color(rgb);
 				if (Color.WHITE.equals(color)) {
-					result[i][j] = 1;
+					result[i][j] = INTENSITY_FOREGROUND;
 				} else {
-					result[i][j] = 0;
+					result[i][j] = INTENSITY_BACKGROUND;
 				}
 			}
 		}
+
 		return result;
 	}
 
