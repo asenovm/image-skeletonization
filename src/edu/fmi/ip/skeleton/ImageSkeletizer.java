@@ -174,13 +174,13 @@ public class ImageSkeletizer {
 			while (isMoving) {
 				isMoving = false;
 				map[currentY][currentX] = -1;
-				if (currentX < map.length - 1
+				if (currentX < map[0].length - 1
 						&& map[currentY][currentX + 1] > 0) {
 					isMoving = true;
 					appendNewLine = true;
 					code.append("0");
 					++currentX;
-				} else if (currentY >= 1 && currentX < map.length - 1
+				} else if (currentY >= 1 && currentX < map[0].length - 1
 						&& map[currentY - 1][currentX + 1] > 0) {
 					isMoving = true;
 					appendNewLine = true;
