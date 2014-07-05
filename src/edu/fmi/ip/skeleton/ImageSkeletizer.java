@@ -144,7 +144,8 @@ public class ImageSkeletizer {
 
 				@Override
 				public void run() {
-					imageProcessingCallback.onImageThinned(thinnedImage, binarized);
+					imageProcessingCallback.onImageThinned(thinnedImage,
+							binarized);
 				}
 			});
 		} catch (IOException e) {
@@ -219,66 +220,61 @@ public class ImageSkeletizer {
 		return null;
 	}
 
+	private void appendChainCode(final int[][] map, final int x, final int y,
+			final StringBuilder code) {
+
+		map[y][x] = -1;
+
+		if (x < map[y].length - 1 && map[y][x + 1] > 0) {
+			code.append("0");
+			appendChainCode(map, x + 1, y, code);
+		}
+
+		if (y >= 1 && x < map[y].length - 1 && map[y - 1][x + 1] > 0) {
+			code.append("1");
+			appendChainCode(map, x + 1, y - 1, code);
+		}
+
+		if (y >= 1 && map[y - 1][x] > 0) {
+			code.append("2");
+			appendChainCode(map, x, y - 1, code);
+		}
+
+		if (x >= 1 && y >= 1 && map[y - 1][x - 1] > 0) {
+			code.append("3");
+			appendChainCode(map, x - 1, y - 1, code);
+		}
+
+		if (x >= 1 && map[y][x - 1] > 0) {
+			code.append("4");
+			appendChainCode(map, x - 1, y, code);
+		}
+
+		if (y < map.length - 1 && x >= 1 && map[y + 1][x - 1] > 0) {
+			code.append("5");
+			appendChainCode(map, x - 1, y + 1, code);
+		}
+
+		if (y < map.length - 1 && map[y + 1][x] > 0) {
+			code.append("6");
+			appendChainCode(map, x, y + 1, code);
+		}
+
+		if (y < map.length - 1 && x < map[y].length - 1
+				&& map[y + 1][x + 1] > 0) {
+			code.append("7");
+			appendChainCode(map, x + 1, y + 1, code);
+		}
+
+	}
+
 	public String getChainCode(final BufferedImage skeleton) {
 		final int[][] map = ImageMapRetriever.getBallMap(skeleton);
 		final StringBuilder code = new StringBuilder();
 
-		Point start;
+		Point start = getChainStartPosition(map);
 		while ((start = getChainStartPosition(map)) != null) {
-			int currentX = start.x;
-			int currentY = start.y;
-
-			boolean isMoving = true;
-
-			while (isMoving) {
-				isMoving = false;
-				map[currentY][currentX] = -1;
-				if (currentX < map[currentY].length - 1
-						&& map[currentY][currentX + 1] > 0) {
-					isMoving = true;
-					code.append("0");
-					++currentX;
-				} else if (currentY >= 1 && currentX < map[currentY].length - 1
-						&& map[currentY - 1][currentX + 1] > 0) {
-					isMoving = true;
-					code.append("1");
-					--currentY;
-					++currentX;
-				} else if (currentY >= 1 && map[currentY - 1][currentX] > 0) {
-					isMoving = true;
-					code.append("2");
-					--currentY;
-				} else if (currentX >= 1 && currentY >= 1
-						&& map[currentY - 1][currentX - 1] > 0) {
-					isMoving = true;
-					code.append("3");
-					--currentX;
-					--currentY;
-				} else if (currentX >= 1 && map[currentY][currentX - 1] > 0) {
-					isMoving = true;
-					code.append("4");
-					--currentX;
-				} else if (currentY < map.length - 1 && currentX >= 1
-						&& map[currentY + 1][currentX - 1] > 0) {
-					isMoving = true;
-					code.append("5");
-					++currentY;
-					--currentX;
-				} else if (currentY < map.length - 1
-						&& map[currentY + 1][currentX] > 0) {
-					isMoving = true;
-					code.append("6");
-					++currentY;
-				} else if (currentY < map.length - 1
-						&& currentX < map[currentY].length - 1
-						&& map[currentY + 1][currentX + 1] > 0) {
-					isMoving = true;
-					code.append("7");
-					++currentX;
-					++currentY;
-				}
-			}
-
+			appendChainCode(map, start.x, start.y, code);
 		}
 
 		return code.toString();
