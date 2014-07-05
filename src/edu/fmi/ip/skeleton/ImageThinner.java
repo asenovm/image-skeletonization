@@ -23,6 +23,7 @@ public class ImageThinner {
 	}
 
 	public int[][] getThinnedImage(final int[][] image) {
+		final int[][] map = ImageMapRetriever.getDistanceMap(image);
 		boolean hasDeleted = true;
 		while (hasDeleted) {
 			hasDeleted = false;
@@ -30,6 +31,15 @@ public class ImageThinner {
 			hasDeleted = firstPass(image);
 			hasDeleted = secondPass(image) || hasDeleted;
 		}
+
+		for (int i = 0; i < image.length; ++i) {
+			for (int j = 0; j < image[i].length; ++j) {
+				if (image[i][j] > 0) {
+					image[i][j] = map[i][j];
+				}
+			}
+		}
+
 		return image;
 	}
 
@@ -194,7 +204,8 @@ public class ImageThinner {
 		final int endY = y + radius - 1;
 		for (int i = startY; i <= endY; ++i) {
 			for (int j = startX; j <= endX; ++j) {
-				if (ballMap[i][j] == 0) {
+				if (i >= 0 && i < ballMap.length && j >= 0
+						&& j < ballMap[i].length && ballMap[i][j] == 0) {
 					ballMap[i][j] = 1;
 				}
 			}
