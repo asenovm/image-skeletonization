@@ -42,6 +42,12 @@ public class FileReader {
 		public void onOriginalImageRead(File originalImage, Image image) {
 			// blank
 		}
+
+		@Override
+		public void onImageThinned(BufferedImage thinned,
+				BufferedImage binarized) {
+			// blank
+		}
 	}
 
 	public FileReader() {

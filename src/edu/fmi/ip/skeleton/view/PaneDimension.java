@@ -5,22 +5,22 @@ public class PaneDimension {
 	/**
 	 * {@value}
 	 */
-	public static final int WIDTH = 500;
+	public static final int WIDTH = 600;
 
 	/**
 	 * {@value}
 	 */
-	public static final int HEIGHT = 400;
+	public static final int HEIGHT = 500;
 
 	/**
 	 * {@value}
 	 */
-	public static final int WIDTH_CONTAINER_IMAGE = 200;
+	public static final int WIDTH_CONTAINER_IMAGE = 250;
 
 	/**
 	 * {@value}
 	 */
-	public static final int HEIGHT_CONTAINER_IMAGE = 170;
+	public static final int HEIGHT_CONTAINER_IMAGE = 220;
 
 	/**
 	 * {@value}

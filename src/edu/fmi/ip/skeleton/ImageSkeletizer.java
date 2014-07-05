@@ -115,6 +115,44 @@ public class ImageSkeletizer {
 
 	}
 
+	public void thin(File imageFile) {
+		try {
+			final BufferedImage image = ImageIO.read(imageFile);
+			final BufferedImage binarized = binarizer.binarize(image);
+			final int[][] colors = ColorUtil.convertToBinaryColors(binarized);
+
+			final ImageThinner thinner = new ImageThinner();
+			final int[][] thinnedColors = thinner.getThinnedImage(colors);
+
+			final BufferedImage thinnedImage = new BufferedImage(
+					thinnedColors[0].length, thinnedColors.length,
+					TYPE_INT_ARGB);
+
+			for (int i = 0; i < thinnedColors.length; ++i) {
+				for (int j = 0; j < thinnedColors[0].length; ++j) {
+					int rgb = thinnedColors[i][j];
+					if (rgb > 0) {
+						rgb = ColorUtil.distanceToColor(rgb);
+					} else {
+						rgb = Color.BLACK.getRGB();
+					}
+					thinnedImage.setRGB(j, i, rgb);
+				}
+			}
+
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					imageProcessingCallback.onImageThinned(thinnedImage, binarized);
+				}
+			});
+		} catch (IOException e) {
+			Logger.getLogger(TAG).severe(e.getMessage());
+		}
+
+	}
+
 	public void skeletize(File imageFile) {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
@@ -122,7 +160,7 @@ public class ImageSkeletizer {
 			final int[][] colors = ColorUtil.convertToBinaryColors(binarized);
 
 			final ImageThinner thinner = new ImageThinner();
-			final int[][] ballMap = thinner.getThinnedImage(colors);
+			final int[][] ballMap = thinner.getMedialAxis(colors);
 
 			final BufferedImage thinned = new BufferedImage(ballMap[0].length,
 					ballMap.length, TYPE_INT_ARGB);
@@ -191,69 +229,56 @@ public class ImageSkeletizer {
 			int currentY = start.y;
 
 			boolean isMoving = true;
-			boolean appendNewLine = false;
 
 			while (isMoving) {
 				isMoving = false;
 				map[currentY][currentX] = -1;
-				if (currentX < map[0].length - 1
+				if (currentX < map[currentY].length - 1
 						&& map[currentY][currentX + 1] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("0");
 					++currentX;
-				} else if (currentY >= 1 && currentX < map[0].length - 1
+				} else if (currentY >= 1 && currentX < map[currentY].length - 1
 						&& map[currentY - 1][currentX + 1] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("1");
 					--currentY;
 					++currentX;
 				} else if (currentY >= 1 && map[currentY - 1][currentX] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("2");
 					--currentY;
 				} else if (currentX >= 1 && currentY >= 1
 						&& map[currentY - 1][currentX - 1] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("3");
 					--currentX;
 					--currentY;
 				} else if (currentX >= 1 && map[currentY][currentX - 1] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("4");
 					--currentX;
 				} else if (currentY < map.length - 1 && currentX >= 1
 						&& map[currentY + 1][currentX - 1] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("5");
 					++currentY;
 					--currentX;
 				} else if (currentY < map.length - 1
 						&& map[currentY + 1][currentX] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("6");
 					++currentY;
 				} else if (currentY < map.length - 1
-						&& currentX < map[0].length - 1
+						&& currentX < map[currentY].length - 1
 						&& map[currentY + 1][currentX + 1] > 0) {
 					isMoving = true;
-					appendNewLine = true;
 					code.append("7");
 					++currentX;
 					++currentY;
 				}
 			}
 
-			if (appendNewLine) {
-				appendNewLine = false;
-				code.append("\n");
-			}
 		}
 
 		return code.toString();

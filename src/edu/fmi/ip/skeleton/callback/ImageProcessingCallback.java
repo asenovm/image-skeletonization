@@ -49,4 +49,8 @@ public interface ImageProcessingCallback {
 	 *            the {@link Image} representation of the image
 	 */
 	void onOriginalImageRead(final File originalImage, final Image image);
+
+	void onImageThinned(final BufferedImage thinned,
+			final BufferedImage binarized);
+
 }

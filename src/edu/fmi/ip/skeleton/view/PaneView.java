@@ -54,6 +54,11 @@ public class PaneView extends JPanel implements ActionListener,
 	 */
 	private static final String VECTORIZE_IMAGE = "Векторизирай";
 
+	/**
+	 * {@value}
+	 */
+	private static final String THIN_IMAGE = "Изтъни";
+
 	private final JButton openButton;
 
 	private final JButton skeletonizeButton;
@@ -65,6 +70,8 @@ public class PaneView extends JPanel implements ActionListener,
 	private final JButton originalButton;
 
 	private final JButton vectorizeButton;
+
+	private final JButton thinButton;
 
 	private final JFileChooser fileChooser;
 
@@ -125,6 +132,11 @@ public class PaneView extends JPanel implements ActionListener,
 				final String savePath) {
 			// blank
 		}
+
+		@Override
+		public void onThinRequired(File imageFile) {
+			// blank
+		}
 	}
 
 	public PaneView() {
@@ -140,6 +152,7 @@ public class PaneView extends JPanel implements ActionListener,
 		restoreButton = createButton(RESTORE_IMAGE);
 		originalButton = createButton(ORIGINAL_IMAGE);
 		vectorizeButton = createButton(VECTORIZE_IMAGE);
+		thinButton = createButton(THIN_IMAGE);
 
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buttonPanel.add(openButton);
@@ -148,6 +161,7 @@ public class PaneView extends JPanel implements ActionListener,
 		buttonPanel.add(restoreButton);
 		buttonPanel.add(saveButton);
 		buttonPanel.add(vectorizeButton);
+		buttonPanel.add(thinButton);
 
 		hideAllButtons();
 		openButton.setVisible(true);
@@ -209,6 +223,8 @@ public class PaneView extends JPanel implements ActionListener,
 				buttonCallback.onVectorizationRequired(skeletizedImage,
 						fileChooser.getSelectedFile().getAbsolutePath());
 			}
+		} else if (e.getSource() == thinButton) {
+			buttonCallback.onThinRequired(imageFile);
 		}
 	}
 
@@ -236,6 +252,7 @@ public class PaneView extends JPanel implements ActionListener,
 		openButton.setVisible(true);
 		skeletonizeButton.setVisible(true);
 		originalButton.setVisible(true);
+		thinButton.setVisible(true);
 	}
 
 	@Override
@@ -249,7 +266,7 @@ public class PaneView extends JPanel implements ActionListener,
 
 		final ImageView skeletizedView = new ImageView();
 		imagePanel.add(skeletizedView);
-		
+
 		final ImageView distanceView = new ImageView();
 		imagePanel.add(distanceView);
 
@@ -321,5 +338,34 @@ public class PaneView extends JPanel implements ActionListener,
 		originalButton.setVisible(false);
 		vectorizeButton.setVisible(false);
 		saveButton.setVisible(false);
+		thinButton.setVisible(false);
+	}
+
+	@Override
+	public void onImageThinned(BufferedImage thinned, BufferedImage binarized) {
+		imagePanel.removeAll();
+
+		final ImageView binarizedView = new ImageView();
+		imagePanel.add(imageView);
+		imagePanel.add(binarizedView);
+
+		final ImageView skeletizedView = new ImageView();
+		imagePanel.add(skeletizedView);
+
+		final ImageView distanceView = new ImageView();
+		imagePanel.add(distanceView);
+
+		binarizedView.setImage(binarized);
+		skeletizedView.setImage(thinned);
+		imageView.setImage(image);
+
+		skeletizedImage = thinned;
+		binarizedImage = binarized;
+
+		hideAllButtons();
+		openButton.setVisible(true);
+		saveButton.setVisible(true);
+		vectorizeButton.setVisible(true);
+
 	}
 }

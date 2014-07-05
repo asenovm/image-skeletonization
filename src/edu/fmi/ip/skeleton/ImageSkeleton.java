@@ -38,6 +38,8 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
 	private final RestoreRunnable restoreRunnable;
 
+	private final ThinRunnable thinRunnable;
+
 	private class RestoreRunnable implements Runnable {
 
 		private File originalImage;
@@ -61,6 +63,16 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 		}
 	}
 
+	private class ThinRunnable implements Runnable {
+		private File image;
+
+		@Override
+		public void run() {
+			skeletizer.thin(image);
+		}
+
+	}
+
 	public ImageSkeleton() {
 		reader = new FileReader();
 		skeletizer = new ImageSkeletizer();
@@ -81,6 +93,7 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 		executor = Executors.newSingleThreadExecutor();
 		skeletonRunnable = new SkeletonRunnable();
 		restoreRunnable = new RestoreRunnable();
+		thinRunnable = new ThinRunnable();
 	}
 
 	public static void main(String[] args) {
@@ -152,5 +165,17 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 			final String savePath) {
 		final String chainCode = skeletizer.getChainCode(skeleton);
 		saver.saveVector(savePath, chainCode);
+	}
+
+	@Override
+	public void onThinRequired(File imageFile) {
+		thinRunnable.image = imageFile;
+		executor.execute(thinRunnable);
+	}
+
+	@Override
+	public void onImageThinned(BufferedImage thinned, BufferedImage binarized) {
+		layout.onImageThinned(thinned, binarized);
+		frame.pack();
 	}
 }

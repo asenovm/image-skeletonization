@@ -71,4 +71,6 @@ public interface ButtonCallback {
 	 */
 	void onVectorizationRequired(final BufferedImage skeletized,
 			final String savePath);
+
+	void onThinRequired(final File imageFile);
 }
