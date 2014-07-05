@@ -28,12 +28,13 @@ public class FileReader {
 
 		@Override
 		public void onImageSkeletized(final BufferedImage binarized,
-				final BufferedImage skeletize) {
+				final BufferedImage skeletize, final BufferedImage distanceMap) {
 			// blank
 		}
 
 		@Override
-		public void onImageRestored(BufferedImage restored, int match, int falsePositive, int falseNegative) {
+		public void onImageRestored(BufferedImage restored, int match,
+				int falsePositive, int falseNegative) {
 			// blank
 		}
 

@@ -35,9 +35,12 @@ public class ImageSkeletizer {
 
 		private BufferedImage thinned;
 
+		private BufferedImage distanceMap;
+
 		@Override
 		public void run() {
-			imageProcessingCallback.onImageSkeletized(binarized, thinned);
+			imageProcessingCallback.onImageSkeletized(binarized, thinned,
+					distanceMap);
 		}
 	}
 
@@ -59,7 +62,7 @@ public class ImageSkeletizer {
 	public void restore(File imageFile, File originalImageFile) {
 		try {
 			final BufferedImage image = ImageIO.read(imageFile);
-			final int[][] ballMap = DistanceMapRetriever.getDistanceMap(image);
+			final int[][] ballMap = ImageMapRetriever.getBallMap(image);
 
 			final ImageThinner thinner = new ImageThinner();
 			final int[][] reconstructed = thinner
@@ -136,6 +139,25 @@ public class ImageSkeletizer {
 				}
 			}
 
+			final int[][] distances = ImageMapRetriever.getDistanceMap(colors);
+			final BufferedImage distanceMap = new BufferedImage(
+					ballMap[0].length, ballMap.length, TYPE_INT_ARGB);
+
+			for (int i = 0; i < distances.length; ++i) {
+				for (int j = 0; j < distances[0].length; ++j) {
+					int rgb = Color.BLACK.getRGB();
+					if (distances[i][j] > 0) {
+						rgb = new Color(Math.max(ColorUtil.INTENSITY_MAX - 5
+								* distances[i][j], 0), Math.max(
+								ColorUtil.INTENSITY_MAX - 5 * distances[i][j],
+								0), Math.max(ColorUtil.INTENSITY_MAX - 5
+								* distances[i][j], 0)).getRGB();
+					}
+					distanceMap.setRGB(j, i, rgb);
+				}
+			}
+
+			callbackRunnable.distanceMap = distanceMap;
 			callbackRunnable.binarized = binarized;
 			callbackRunnable.thinned = thinned;
 			SwingUtilities.invokeLater(callbackRunnable);
@@ -160,7 +182,7 @@ public class ImageSkeletizer {
 	}
 
 	public String getChainCode(final BufferedImage skeleton) {
-		final int[][] map = DistanceMapRetriever.getDistanceMap(skeleton);
+		final int[][] map = ImageMapRetriever.getBallMap(skeleton);
 		final StringBuilder code = new StringBuilder();
 
 		Point start;

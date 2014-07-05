@@ -110,8 +110,8 @@ public class ImageSkeleton implements ButtonCallback, ImageProcessingCallback {
 
 	@Override
 	public void onImageSkeletized(final BufferedImage binarized,
-			final BufferedImage skeletized) {
-		layout.onImageSkeletized(binarized, skeletized);
+			final BufferedImage skeletized, final BufferedImage distanceMap) {
+		layout.onImageSkeletized(binarized, skeletized, distanceMap);
 		frame.pack();
 	}
 

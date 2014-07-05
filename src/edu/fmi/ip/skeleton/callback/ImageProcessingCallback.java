@@ -27,7 +27,7 @@ public interface ImageProcessingCallback {
 	 *            the resultant image skeleton
 	 */
 	void onImageSkeletized(final BufferedImage binarized,
-			final BufferedImage skeletized);
+			final BufferedImage skeletized, final BufferedImage distanceMap);
 
 	/**
 	 * A callback fired when the skeletonized image has been restored to its

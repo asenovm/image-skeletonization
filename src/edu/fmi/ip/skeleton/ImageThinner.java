@@ -8,7 +8,7 @@ public class ImageThinner {
 	 * {@value}
 	 */
 	private static final int RADIUS_START = 1;
-
+	
 	public int[][] getThinnedImage(final int[][] image) {
 		int radius = RADIUS_START;
 

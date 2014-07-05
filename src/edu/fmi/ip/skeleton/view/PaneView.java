@@ -240,7 +240,7 @@ public class PaneView extends JPanel implements ActionListener,
 
 	@Override
 	public void onImageSkeletized(final BufferedImage binarized,
-			final BufferedImage skeletized) {
+			final BufferedImage skeletized, final BufferedImage distanceMap) {
 		imagePanel.removeAll();
 
 		final ImageView binarizedView = new ImageView();
@@ -249,9 +249,13 @@ public class PaneView extends JPanel implements ActionListener,
 
 		final ImageView skeletizedView = new ImageView();
 		imagePanel.add(skeletizedView);
+		
+		final ImageView distanceView = new ImageView();
+		imagePanel.add(distanceView);
 
 		binarizedView.setImage(binarized);
 		skeletizedView.setImage(skeletized);
+		distanceView.setImage(distanceMap);
 		imageView.setImage(image);
 
 		skeletizedImage = skeletized;
